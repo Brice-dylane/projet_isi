@@ -12,9 +12,9 @@
 
 import 'dart:convert';
 
-List<Formation> formationFromMap(String str) => List<Formation>.from(json.decode(str).map((x) => Formation.fromMap(x)));
+Welcome welcomeFromMap(String str) => Welcome.fromMap(json.decode(str));
 
-String formationToMap(Welcome data) => json.encode(data.toMap());
+String welcomeToMap(Welcome data) => json.encode(data.toMap());
 
 class Welcome {
   Welcome({
@@ -24,7 +24,7 @@ class Welcome {
   List<Formation> formation;
 
   factory Welcome.fromMap(Map<String, dynamic> json) => Welcome(
-    formation: List<Formation>.from(json["formation"].map((x) => Formation.fromMap(x))),
+    formation: List<Formation>.from(json["data"].map((x) => Formation.fromMap(x))),
   );
 
   Map<String, dynamic> toMap() => {
@@ -34,22 +34,34 @@ class Welcome {
 
 class Formation {
   Formation({
+    this.the0,
+    this.the1,
+    this.the2,
     this.id,
     this.titre,
     this.description,
   });
 
+  String the0;
+  String the1;
+  String the2;
   String id;
   String titre;
   String description;
 
   factory Formation.fromMap(Map<String, dynamic> json) => Formation(
+    the0: json["0"],
+    the1: json["1"],
+    the2: json["2"],
     id: json["id"],
     titre: json["titre"],
     description: json["description"],
   );
 
   Map<String, dynamic> toMap() => {
+    "0": the0,
+    "1": the1,
+    "2": the2,
     "id": id,
     "titre": titre,
     "description": description,

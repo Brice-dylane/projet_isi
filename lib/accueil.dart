@@ -17,16 +17,16 @@ class _AcceuilPage extends State<AcceuilPage> {
 
   ];
 
+
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-        body: Container(
+        body: SingleChildScrollView(
             child: Center(
               child: Column(
                 children: <Widget>[
                   _headerTitle(),
                   _secondTitle(),
-                  _search(),
                   _itemsFormation(),
                 ],
               ),
@@ -40,7 +40,7 @@ class _AcceuilPage extends State<AcceuilPage> {
               onPressed: _connectionPage,
               label: Text('Se Connecter'),
               icon: Icon(Icons.supervisor_account_rounded),
-              backgroundColor: mainColor,
+              backgroundColor: Colors.teal,
             ),
           ],
         ),
@@ -49,7 +49,7 @@ class _AcceuilPage extends State<AcceuilPage> {
 
   Widget _headerTitle(){
     return Container(
-      margin: EdgeInsets.only(top: 60.0,left: MediaQuery.of(context).size.width/6,),
+      margin: EdgeInsets.only(top: 60.0,left: MediaQuery.of(context).size.height/10),
       child: Row(
         children: <Widget>[
           Container(
@@ -70,7 +70,7 @@ class _AcceuilPage extends State<AcceuilPage> {
 
   Widget _secondTitle(){
     return Container(
-      margin: EdgeInsets.only(top: 30.0,left: MediaQuery.of(context).size.width/4),
+      margin: EdgeInsets.only(top: 30.0,left: MediaQuery.of(context).size.height / 6),
 
       child: Center(
         child: Column(
@@ -78,7 +78,15 @@ class _AcceuilPage extends State<AcceuilPage> {
             Row(
               children: <Widget>[
                 Icon(Icons.badge, color: mainColor,size: 50.0),
-                new Text(' Nos formations', style: TextStyle(fontSize: MediaQuery.of(context).size.height / 30),)
+                new Text(' Nos formations ', style: TextStyle(fontSize: MediaQuery.of(context).size.height / 30),),
+                IconButton(
+                  iconSize: 40.0,
+                    icon: Icon(Icons.refresh),
+                    onPressed: (){
+                      setState(() {
+                        fetchFormation();
+                      });
+                    })
               ],
             )
           ],
@@ -87,24 +95,6 @@ class _AcceuilPage extends State<AcceuilPage> {
     );
   }
 
-  Widget _search(){
-    return Container(
-      margin: EdgeInsets.only(top: 30.0,left: MediaQuery.of(context).size.width/40),
-      width: MediaQuery.of(context).size.width/3,
-      color: Colors.black12,
-      child: Row(
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search, size: 30.0),
-            onPressed: (){
-              print('search');
-            },
-          ),
-
-        ],
-      ),
-    );
-  }
 
   Widget _itemsFormation(){
     return Container(
@@ -112,9 +102,39 @@ class _AcceuilPage extends State<AcceuilPage> {
         future: fetchFormation(),
         builder: (context, snapshot){
           if(snapshot.hasData){
+              return ListView.builder(
+                  itemCount: snapshot.data.length,
+                  shrinkWrap: true,
+                  itemBuilder:(BuildContext context, index){
+                    Formation formation = snapshot.data[index];
+                    return Container(
+                      margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+                      padding: EdgeInsets.all(20.0),
+                      color: mainColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              Icon(Icons.badge,size: 20.0, color: Colors.white),
+                              Text(' ${formation.titre}'.toUpperCase(),style: TextStyle(fontSize: 20.0, color: Colors.white))
+                            ],
+                          ),
 
+                          Container(margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
+                          Text('${formation.description}',style: TextStyle(fontSize: 15.0, color: Colors.white)),
+                          Container(
+                              margin: EdgeInsets.only(top: 5.0,left: 0.0),
+                            child:
+                              Text('Activer',style: TextStyle(fontSize: 10.0, color: Colors.white))
+                          )
+                        ],
+                      ),
+                    );
+                  }
+              );
           }
-          return CircularProgressIndicator();
+            return CircularProgressIndicator();
         },
       ),
     );
@@ -128,7 +148,7 @@ class _AcceuilPage extends State<AcceuilPage> {
       child: Column(
         children: <Widget>[
           Text('Formation 1',style: TextStyle(fontSize: MediaQuery.of(context).size.height / 60)),
-          Text('Lorem ipsum dolor sit amet, consecmagna aliqua. Ut enim ad minim veniam, quis, consecmagna aliqua. Ut enim ad minim veniam, quis, consecmagna aliqua. Ut enim ad minim veniam, quis ...')
+          Text('')
         ],
       ),
     );
