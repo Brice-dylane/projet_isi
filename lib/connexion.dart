@@ -4,6 +4,7 @@ import 'package:email_validator/email_validator.dart';
 import 'entite/utilisateur.dart';
 import 'newAccount.dart';
 
+
 class LoginPage extends StatefulWidget {
   @override
   _LoginPageState createState() => _LoginPageState();

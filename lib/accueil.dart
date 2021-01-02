@@ -13,9 +13,6 @@ class AcceuilPage extends StatefulWidget {
 
 class _AcceuilPage extends State<AcceuilPage> {
 
-  final _listFormation = [
-
-  ];
 
 
   @override
@@ -107,28 +104,32 @@ class _AcceuilPage extends State<AcceuilPage> {
                   shrinkWrap: true,
                   itemBuilder:(BuildContext context, index){
                     Formation formation = snapshot.data[index];
-                    return Container(
+                    return Card(
+                      elevation: 10.0,
                       margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                      padding: EdgeInsets.all(20.0),
                       color: mainColor,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.badge,size: 20.0, color: Colors.white),
-                              Text(' ${formation.titre}'.toUpperCase(),style: TextStyle(fontSize: 20.0, color: Colors.white))
-                            ],
-                          ),
+                      child: Container(
+                        margin: EdgeInsets.all(15.0),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Row(
+                              children: <Widget>[
+                                Icon(Icons.badge,size: 20.0, color: Colors.white),
+                                Text(' ${formation.titre}'.toUpperCase(),style: TextStyle(fontSize: 20.0, color: Colors.white))
+                              ],
+                            ),
 
-                          Container(margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
-                          Text('${formation.description}',style: TextStyle(fontSize: 15.0, color: Colors.white)),
-                          Container(
-                              margin: EdgeInsets.only(top: 5.0,left: 0.0),
-                            child:
-                              Text('Activer',style: TextStyle(fontSize: 10.0, color: Colors.white))
-                          )
-                        ],
+                            Container(margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
+                            Text('${formation.description}',style: TextStyle(fontSize: 15.0, color: Colors.white)),
+                            Container(
+                                margin: EdgeInsets.only(top: 5.0,left: 0.0),
+                                child:
+                                Text('Activer',style: TextStyle(fontSize: 10.0, color: Colors.white))
+                            )
+                          ],
+                        ),
                       ),
                     );
                   }
