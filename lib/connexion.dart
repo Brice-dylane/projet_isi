@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projet_isi/constants.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:projet_isi/ui_utilisateur/mainPage.dart';
 import 'entite/utilisateur.dart';
 import 'newAccount.dart';
 
@@ -159,7 +160,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
             onPressed: () async {
               if(_formKey.currentState.validate()){
-
+                connexionUser();
               }
             },
             child: Text(
@@ -262,6 +263,11 @@ class _LoginPageState extends State<LoginPage> {
 
   void newAccountPage(){
     Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => CreateAccountPage()
+    ));
+  }
+
+  void connexionUser(){
+    Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => MainPage()
     ));
   }
 
