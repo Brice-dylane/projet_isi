@@ -19,14 +19,19 @@ class CreateAccountPage extends StatefulWidget{
 class _CreateAccountPage extends State<CreateAccountPage> {
   String mdp='';
   String confirMDP='';
-  Utilisateur newUser;
   DateTime _date = DateTime.now();
   DateTime update = DateTime.now();
   int jour = DateTime.now().day;
   int mois = DateTime.now().month;
   int annee = DateTime.now().year;
 
-  Future<Data> data;
+  String nom = '';
+  String prenom = '';
+  String sexe = '';
+  String profile = '';
+  String etablissement = '';
+  String login = '';
+
 
   final _formKey = GlobalKey<FormState>();
 
@@ -43,9 +48,6 @@ class _CreateAccountPage extends State<CreateAccountPage> {
         jour = _date.day;
         mois = _date.month;
         annee = _date.year;
-        print(_date.toString());
-        newUser.dateNais = _date;
-        newUser.lastUpdate = update;
       });
     }
   }
@@ -139,7 +141,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 keyboardType: TextInputType.text,
                 onChanged: (String change){
                   setState(() {
-                    newUser.nom = change;
+                    nom = change;
                   });
                 },
                 decoration: InputDecoration(
@@ -165,7 +167,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.prenom = change;
+                      prenom = change;
                     });
                   },
                   decoration: InputDecoration(
@@ -188,9 +190,9 @@ class _CreateAccountPage extends State<CreateAccountPage> {
         initialValue: 'circle',
         labelText: 'Sex',
         items: _sexitems,
-        onChanged: (String val) {
+        onChanged: (String change) {
           setState(() {
-            newUser.sexe = val;
+            sexe = change;
           });
         },
         onSaved: (val) => print(val),
@@ -229,9 +231,9 @@ class _CreateAccountPage extends State<CreateAccountPage> {
         initialValue: 'circle',
         labelText: 'Profil',
         items: _profilitems,
-        onChanged: (String val){
+        onChanged: (String change){
           setState(() {
-            newUser.profil = val;
+            profile = change;
           });
         },
         onSaved: (val) => print(val),
@@ -250,7 +252,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.etablissement = change;
+                      etablissement = change;
                     });
                   },
                   decoration: InputDecoration(
@@ -276,14 +278,14 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.login = change;
+                      login = change;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                   ),
-                  validator: (val) => !EmailValidator.Validate(newUser.login,true)? 'Adresse mail non valide':null,
+                  validator: (val) => !EmailValidator.Validate(login,true)? 'Adresse mail non valide':null,
                 )
               ],
             )
@@ -331,7 +333,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   onChanged: (String change){
                     setState(() {
                       confirMDP = convertMdp(change);
-                      newUser.pwd = confirMDP;
+                      mdp = confirMDP;
                     });
                   },
                   decoration: InputDecoration(
@@ -362,7 +364,26 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             ),
             onPressed: () async {
               if(_formKey.currentState.validate()){
-
+                Utilisateur newUser = new Utilisateur(
+                  idUser: '0',
+                  nom: nom,
+                  prenom: prenom,
+                  sexe: sexe,
+                  dateNais: _date,
+                  profil: profile,
+                  etablissement: etablissement,
+                  login: login,
+                  pwd: mdp,
+                  lastUpdate: update,
+                );
+                Data dataCreate = await newAccount(newUser);
+                print(dataCreate.message);
+                if(dataCreate.status==1) {
+                 // dialog("Success!", "Votre compte a été créé",dataCreate.status);
+                }
+                else{
+                  //dialog("Echec!", "L'adresse mail est déja utilisée",dataCreate.status);
+                }
               }
             },
             child: Text(
@@ -379,53 +400,6 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }
 
-  Widget _isInsert(){
-    return Container(
-      child: FutureBuilder(
-        future: newAccount(newUser),
-        builder: (context, snapshot){
-          if(snapshot.hasData){
-            return ListView.builder(
-                itemCount: snapshot.data.length,
-                shrinkWrap: true,
-                itemBuilder:(BuildContext context, index){
-                  Data data = snapshot.data[index];
-                  return Card(
-                    elevation: 10.0,
-                    margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                    color: mainColor,
-                    child: Container(
-                      margin: EdgeInsets.all(15.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              Icon(Icons.badge,size: 20.0, color: Colors.white),
-
-                            ],
-                          ),
-
-                          Container(margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
-
-                          Container(
-                              margin: EdgeInsets.only(top: 5.0,left: 0.0),
-                              child:
-                              Text('Activer',style: TextStyle(fontSize: 10.0, color: Colors.white))
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }
-            );
-          }
-          return CircularProgressIndicator();
-        },
-      ),
-    );
-  }
 
   String convertMdp(String mdp){
     var content = new Utf8Encoder().convert(mdp);
@@ -434,9 +408,30 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     return hex.encode(digest.bytes);
   }
 
-  bool isInsert(Utilisateur user){
-    bool insert;
-    data = newAccount(user);
 
+  Future<Null> dialog(String title, String desc, int status) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context){
+          return new SimpleDialog(
+            title: new Text(title, textScaleFactor: 1.4, style: TextStyle(color: status==1?Colors.green:Colors.redAccent),),
+            contentPadding: EdgeInsets.all(10.0),
+            children: <Widget> [
+              new Text(desc, style: TextStyle(color: status==1?Colors.green:Colors.redAccent)),
+              new Container(height: 20.0,),
+              new RaisedButton(
+                color: Colors.teal,
+                textColor: Colors.white,
+                child: new Text('OK'),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
   }
+
 }

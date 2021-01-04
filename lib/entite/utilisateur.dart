@@ -22,16 +22,6 @@ class Welcome {
 
 class Utilisateur {
   Utilisateur({
-    this.the0,
-    this.the1,
-    this.the2,
-    this.the3,
-    this.the4,
-    this.the5,
-    this.the6,
-    this.the7,
-    this.the8,
-    this.the9,
     this.idUser,
     this.nom,
     this.prenom,
@@ -66,16 +56,6 @@ class Utilisateur {
   DateTime lastUpdate;
 
   factory Utilisateur.fromMap(Map<String, dynamic> json) => Utilisateur(
-    the0: json["0"],
-    the1: json["1"],
-    the2: json["2"],
-    the3: json["3"],
-    the4: DateTime.parse(json["4"]),
-    the5: json["5"],
-    the6: json["6"],
-    the7: json["7"],
-    the8: json["8"],
-    the9: DateTime.parse(json["9"]),
     idUser: json["id_user"],
     nom: json["nom"],
     prenom: json["prenom"],
