@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:select_form_field/select_form_field.dart';
 
-import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;

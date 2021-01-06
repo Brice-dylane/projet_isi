@@ -22,7 +22,7 @@ class Welcome {
 
 class Utilisateur {
   Utilisateur({
-    this.idUser,
+   // this.idUser,
     this.nom,
     this.prenom,
     this.sexe,
@@ -56,7 +56,7 @@ class Utilisateur {
   DateTime lastUpdate;
 
   factory Utilisateur.fromMap(Map<String, dynamic> json) => Utilisateur(
-    idUser: json["id_user"],
+   // idUser: json["id_user"],
     nom: json["nom"],
     prenom: json["prenom"],
     sexe: json["sexe"],

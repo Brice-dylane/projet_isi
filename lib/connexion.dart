@@ -47,7 +47,7 @@ class _LoginPageState extends State<LoginPage> {
             Radius.circular(40),
           ),
           child: Container(
-              height: MediaQuery.of(context).size.height * 0.6,
+              height: MediaQuery.of(context).size.height * 0.7,
               width: MediaQuery.of(context).size.width * 0.8,
               decoration: BoxDecoration(
                 color: Colors.white,
@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                         Text(
                           "Apply to ISJ",
                           style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.height / 15,
+                            fontSize: MediaQuery.of(context).size.height / 17,
                             color: mainColor
                           ),
                         ),
@@ -182,7 +182,7 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Container(
-          margin: EdgeInsets.only(bottom: 20),
+          margin: EdgeInsets.only(bottom: 10),
           child: Text(
             '- OU -',
             style: TextStyle(

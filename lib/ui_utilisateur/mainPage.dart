@@ -20,29 +20,29 @@ class _MainPage extends State<MainPage>{
           children: <Widget>[
             Center(child: Text('Mes formations', style: TextStyle(fontSize: 25.0, color: Colors.white))),
             Container(
-              margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+              margin: EdgeInsets.only(top: 20.0,left: 20.0),
               child: Row(
                 children: <Widget>[
                   Container(
-                    padding: EdgeInsets.all(20.0),
+                    padding: EdgeInsets.all(8.0),
                     color: Colors.teal,
                     child: Column(
                       children: <Widget>[
-                        Icon(Icons.refresh, size: 40.0, color: Colors.white,),
-                        Text('2 Formation(s)', style: TextStyle(fontSize: 20.0, color: Colors.white),),
-                        Text('Encours', style: TextStyle(fontSize: 15.0, color: Colors.white70),),
+                        Icon(Icons.refresh, color: Colors.white,),
+                        Text('2 Formation(s)', style: TextStyle(color: Colors.white),),
+                        Text('Encours', style: TextStyle(color: Colors.white70),),
                       ],
                     ),
                   ),
                   Container(
                     alignment: AlignmentDirectional.topEnd,
-                    padding: EdgeInsets.all(20.0),
+                    padding: EdgeInsets.all(8.0),
                     color: Colors.teal,
                     child: Column(
                       children: <Widget>[
-                        Icon(Icons.emoji_people, size: 40.0, color: Colors.white,),
-                        Text('1 Formation(s)', style: TextStyle(fontSize: 20.0, color: Colors.white),),
-                        Text('Terminée', style: TextStyle(fontSize: 15.0, color: Colors.white70),),
+                        Icon(Icons.emoji_people, color: Colors.white,),
+                        Text('1 Formation(s)', style: TextStyle(color: Colors.white),),
+                        Text('Terminée', style: TextStyle(color: Colors.white70),),
                       ],
                     ),
                   )
@@ -71,15 +71,14 @@ class _MainPage extends State<MainPage>{
                                 children: <Widget>[
                                   Row(
                                     children: <Widget>[
-                                      Icon(Icons.badge,size: 20.0, color: Colors.white),
-                                      Text(' ${formation.titre}'.toUpperCase(),style: TextStyle(fontSize: 20.0, color: Colors.white))
+                                      Icon(Icons.badge, color: Colors.white),
+                                      Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(color: Colors.white))
                                     ],
                                   ),
 
                                   Container(margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
-                                  Text('${formation.description}',style: TextStyle(fontSize: 15.0, color: Colors.white)),
+                                  Text('${formation.description}',style: TextStyle(color: Colors.white)),
                                   Container(
-                                      margin: EdgeInsets.only(top: 5.0,left: 0.0),
                                       child:
                                       Text('Activer',style: TextStyle(fontSize: 10.0, color: Colors.white))
                                   ),
@@ -135,8 +134,7 @@ class _MainPage extends State<MainPage>{
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        iconSize: 40.0,
-        selectedFontSize: 15.0,
+        iconSize: 30.0,
         items: [
           BottomNavigationBarItem(
               icon: Icon(Icons.badge),

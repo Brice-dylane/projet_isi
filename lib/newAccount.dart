@@ -312,7 +312,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Mot de passe',
                   ),
-                  validator: (val) => val.length<6? 'Entrez un mot de passe avec au moins 6 caractères':null,
+                  validator: (val) => mdp.length<=6? 'Entrez un mot de passe avec au moins 6 caractères':null,
                 )
               ],
             )
@@ -365,7 +365,6 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             onPressed: () async {
               if(_formKey.currentState.validate()){
                 Utilisateur newUser = new Utilisateur(
-                  idUser: '0',
                   nom: nom,
                   prenom: prenom,
                   sexe: sexe,
@@ -379,10 +378,10 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 Data dataCreate = await newAccount(newUser);
                 print(dataCreate.message);
                 if(dataCreate.status==1) {
-                 // dialog("Success!", "Votre compte a été créé",dataCreate.status);
+                  dialog("Success!", "Votre compte a été créé",dataCreate.status);
                 }
                 else{
-                  //dialog("Echec!", "L'adresse mail est déja utilisée",dataCreate.status);
+                  dialog("Echec!", "L'adresse mail est déja utilisée",dataCreate.status);
                 }
               }
             },
