@@ -103,9 +103,10 @@ class _Parametre extends State<Parametre>{
                 _buildTitleRow(),
                 _buildNomRow(),
                 _buildPrenomRow(),
-                _buildSexeRow(),
+               // _buildSexeRow(),
+                _sexAndProfil(),
                 _buildDateNaissRow(),
-                _buildProfilRow(),
+               // _buildProfilRow(),
                 _buildEtablissementRow(),
                 _buildMailRow(),
                 _buildMDPRow(),
@@ -198,6 +199,22 @@ class _Parametre extends State<Parametre>{
     );
   }
 
+  Widget _sexAndProfil(){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 150.0,
+          child: _buildSexeRow(),
+        ),
+        Container(
+          width: 150.0,
+          child: _buildProfilRow(),
+        )
+
+      ],
+    );
+  }
+
   Widget _buildDateNaissRow() {
     return Container(
       margin: EdgeInsets.only(top: 10.0),
@@ -227,7 +244,7 @@ class _Parametre extends State<Parametre>{
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
         initialValue: 'circle',
-        labelText: 'Profil',
+        labelText: 'Profile',
         items: _profilitems,
         onChanged: (String val){
           setState(() {
@@ -247,6 +264,7 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  autocorrect: true,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {

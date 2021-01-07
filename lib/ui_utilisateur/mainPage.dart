@@ -14,8 +14,7 @@ class _MainPage extends State<MainPage>{
   int _currentIndex = 0;
   final tabs = [
 
-    SingleChildScrollView(
-      child: Center(
+    Container(
         child: Column(
           children: <Widget>[
             Center(child: Text('Mes formations', style: TextStyle(fontSize: 25.0, color: Colors.white))),
@@ -28,7 +27,7 @@ class _MainPage extends State<MainPage>{
                     color: Colors.teal,
                     child: Column(
                       children: <Widget>[
-                        Icon(Icons.refresh, color: Colors.white,),
+                        Icon(Icons.badge, color: Colors.white,),
                         Text('2 Formation(s)', style: TextStyle(color: Colors.white),),
                         Text('Encours', style: TextStyle(color: Colors.white70),),
                       ],
@@ -37,6 +36,7 @@ class _MainPage extends State<MainPage>{
                   Container(
                     alignment: AlignmentDirectional.topEnd,
                     padding: EdgeInsets.all(8.0),
+                    margin: EdgeInsets.only(left: 5.0),
                     color: Colors.teal,
                     child: Column(
                       children: <Widget>[
@@ -45,80 +45,91 @@ class _MainPage extends State<MainPage>{
                         Text('Terminée', style: TextStyle(color: Colors.white70),),
                       ],
                     ),
-                  )
+                  ),
+                  IconButton(
+                      iconSize: 40.0,
+                      icon: Icon(Icons.refresh),
+                      onPressed: (){
+                          fetchFormation();
+                      })
                 ],
+
               ),
             ),
-            Container(
-              child: FutureBuilder(
+            FutureBuilder(
                 future: fetchFormation(),
                 builder: (context, snapshot){
                   if(snapshot.hasData){
-                    return ListView.builder(
-                        itemCount: snapshot.data.length,
-                        shrinkWrap: true,
-                        itemBuilder:(BuildContext context, index){
-                          Formation formation = snapshot.data[index];
-                          return Card(
-                            elevation: 10.0,
-                            margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                            color: mainColor,
-                            child: Container(
-                              margin: EdgeInsets.all(15.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Row(
-                                    children: <Widget>[
-                                      Icon(Icons.badge, color: Colors.white),
-                                      Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(color: Colors.white))
-                                    ],
-                                  ),
+                    return Expanded(
+                      child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount: snapshot.data.length,
+                          shrinkWrap: true,
+                          itemBuilder:(BuildContext context, index){
+                            Formation formation = snapshot.data[index];
+                            return Card(
+                              elevation: 10.0,
+                              margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+                              color: mainColor,
+                              child: Container(
+                                margin: EdgeInsets.all(15.0),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Row(
+                                      children: <Widget>[
+                                        Icon(Icons.badge, color: Colors.white),
+                                        Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(color: Colors.white))
+                                      ],
+                                    ),
 
-                                  Container(margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
-                                  Text('${formation.description}',style: TextStyle(color: Colors.white)),
-                                  Container(
-                                      child:
-                                      Text('Activer',style: TextStyle(fontSize: 10.0, color: Colors.white))
-                                  ),
-                                  Container(
-                                    alignment: Alignment.bottomRight,
-                                        child: RaisedButton(
-                                          elevation: 5.0,
-                                          color: Colors.white,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(30.0),
-                                          ),
-                                          onPressed: () {
+                                    Container(
+                                      margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                                      child: Text('Spécialité: ${formation.formationSpecialite}',style: TextStyle(color: Colors.white)),
+                                    ),
+                                    Text('${formation.description}',style: TextStyle(color: Colors.white)),
+                                    Container(
+                                        alignment: Alignment.bottomLeft,
+                                        margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
+                                        child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 15.0, color: Colors.white))
+                                    ),
+                                    Container(
+                                      alignment: Alignment.bottomRight,
+                                      child: RaisedButton(
+                                        elevation: 5.0,
+                                        color: Colors.white,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(30.0),
+                                        ),
+                                        onPressed: () {
 
-                                          },
-                                          child: Text(
-                                            "Choisir >",
-                                            style: TextStyle(
-                                              color: mainColor,
-                                              letterSpacing: 1.5,
-                                              fontSize: 15.0,
-                                            ),
+                                        },
+                                        child: Text(
+                                          "Choisir >",
+                                          style: TextStyle(
+                                            color: mainColor,
+                                            letterSpacing: 1.5,
+                                            fontSize: 15.0,
                                           ),
                                         ),
-                                  )
-                                ],
+                                      ),
+                                    )
+                                  ],
+                                ),
                               ),
-                            ),
-                          );
-                        }
+                            );
+                          }
+                      ),
                     );
                   }
                   return CircularProgressIndicator();
                 },
               ),
-            )
 
           ],
         ),
       ),
-    ),
     Center(child: Text('Formations ISJ')),
     Center(child: Text('Paramètres'))
   ];

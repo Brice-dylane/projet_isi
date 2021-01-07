@@ -18,21 +18,13 @@ class _AcceuilPage extends State<AcceuilPage> {
   @override
   Widget build(BuildContext context) {
       return Scaffold(
-        appBar: AppBar(backgroundColor: Colors.white54
-
-          ,),
-        body: Center(
-            child: SingleChildScrollView(
-
-              child: Column(
+        body: Column(
                 children: <Widget>[
                   _headerTitle(),
                   _secondTitle(),
                   _itemsFormation(),
                 ],
               ),
-            ),
-        ),
         floatingActionButton: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -51,7 +43,7 @@ class _AcceuilPage extends State<AcceuilPage> {
   Widget _headerTitle(){
     return Container(
       alignment: Alignment.centerRight,
-      margin: EdgeInsets.only(top: 60.0),
+      margin: EdgeInsets.only(top: 60.0,left: 16.0),
       child: Row(
         children: <Widget>[
           Container(
@@ -72,8 +64,8 @@ class _AcceuilPage extends State<AcceuilPage> {
 
   Widget _secondTitle(){
     return Container(
-      margin: EdgeInsets.only(top: 30.0),
-      alignment: Alignment.center,
+      margin: EdgeInsets.only(top: 30.0,left: 15.0),
+      alignment: Alignment.bottomCenter,
       child: Center(
         child: Column(
           children: <Widget>[
@@ -103,43 +95,46 @@ class _AcceuilPage extends State<AcceuilPage> {
         future: fetchFormation(),
         builder: (context, snapshot){
           if(snapshot.hasData){
-            return ListView.builder(
-                itemCount: snapshot.data.length,
-                shrinkWrap: true,
-                itemBuilder:(BuildContext context, index){
-                  Formation formation = snapshot.data[index];
-                  return Card(
-                    elevation: 10.0,
-                    margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                    color: mainColor,
-                    child: Container(
-                      margin: EdgeInsets.all(15.0),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Row(
+            return Expanded(
+                child: ListView.builder(
+                    physics: BouncingScrollPhysics(),
+                    itemCount: snapshot.data.length,
+                    shrinkWrap: true,
+                    itemBuilder:(BuildContext context, index){
+                      Formation formation = snapshot.data[index];
+                      return Container(
+
+                        margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+                        color: mainColor,
+                        child: Container(
+                          margin: EdgeInsets.all(15.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              Icon(Icons.badge,size: 25.0, color: Colors.white),
-                              Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(fontSize: 15.0, color: Colors.white))
+                              Row(
+                                children: <Widget>[
+                                  Icon(Icons.badge,size: 25.0, color: Colors.white),
+                                  Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(fontSize: 12.0, color: Colors.white))
+                                ],
+                              ),
+
+                              Container(
+                                margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                                child: Text('Spécialité: ${formation.formationSpecialite}',style: TextStyle(color: Colors.white)),
+                              ),
+                              Text('${formation.description}',style: TextStyle(color: Colors.white)),
+                              Container(
+                                  alignment: Alignment.bottomRight,
+                                  margin: EdgeInsets.only(left: 0.0),
+                                  child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 10.0, color: Colors.white))
+                              )
                             ],
                           ),
-
-                          Container(
-                            margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
-                            child: Text('Spécialité: ${formation.formationSpecialite}',style: TextStyle(color: Colors.white)),
-                          ),
-                          Text('${formation.description}',style: TextStyle(color: Colors.white)),
-                          Container(
-                            alignment: Alignment.bottomRight,
-                              margin: EdgeInsets.only(left: 0.0),
-                              child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 10.0, color: Colors.white))
-                          )
-                        ],
-                      ),
-                    ),
-                  );
-                }
+                        ),
+                      );
+                    }
+                )
             );
           }
           return CircularProgressIndicator();
