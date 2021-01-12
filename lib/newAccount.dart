@@ -9,6 +9,8 @@ import 'entite/utilisateur.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
+import 'package:intl/intl.dart';
 
 // ignore: must_be_immutable
 class CreateAccountPage extends StatefulWidget{
@@ -25,12 +27,30 @@ class _CreateAccountPage extends State<CreateAccountPage> {
   int mois = DateTime.now().month;
   int annee = DateTime.now().year;
 
+  final formats = {
+    InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+    InputType.date: DateFormat('yyyy-MM-dd'),
+    InputType.time: DateFormat("HH:mm"),
+  };
+
+  InputType inputType = InputType.date;
+
+
   String nom = '';
   String prenom = '';
   String sexe = '';
   String profile = '';
   String etablissement = '';
   String login = '';
+  String civilite = '';
+  String matricule = '';
+  String cni = '';
+  String telephone = '';
+
+
+  DateTime dateNais= DateTime.now();
+  DateTime dateDelivrance= DateTime.now();
+  DateTime dateExpiration= DateTime.now();
 
 
   final _formKey = GlobalKey<FormState>();
@@ -62,6 +82,21 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       'value': 'Homme',
       'label': 'Homme',
       'icon': Icon(Icons.accessibility),
+    },
+  ];
+
+  final List<Map<String, dynamic>> _civilitetems = [
+    {
+      'value': 'M',
+      'label': 'M',
+    },
+    {
+      'value': 'Mme',
+      'label': 'Mme',
+    },
+    {
+      'value': 'Mlle',
+      'label': 'Mlle',
     },
   ];
 
@@ -105,11 +140,13 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 _buildTitleRow(),
                 _buildNomRow(),
                 _buildPrenomRow(),
-                _buildSexeRow(),
+                _sexAndProfil(),
                 _buildDateNaissRow(),
-                _buildProfilRow(),
+                _buildMatriculeRow(),
+                _buildCNIRow(),
+                _delivranceAndExpiration(),
                 _buildEtablissementRow(),
-                _buildMailRow(),
+                _emailAndTel(),
                 _buildMDPRow(),
                 _buildConfirmMDPRow(),
                 _buildCreateBtnRow()
@@ -174,7 +211,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Prénom',
                   ),
-                  validator: (val) => val.isEmpty? 'Entrer votre prénom': null,
+                  validator: (val) => prenom.isEmpty? 'Entrer votre prénom': null,
                 )
               ],
             )
@@ -188,37 +225,194 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
         initialValue: 'circle',
-        labelText: 'Sex',
+        labelText: 'Sexe',
         items: _sexitems,
         onChanged: (String change) {
           setState(() {
             sexe = change;
           });
         },
+        validator: (val) => sexe.isEmpty? 'Entrer votre sexe': null,
         onSaved: (val) => print(val),
       ),
     );
   }
 
+  Widget _buildcivilite(){
+    return Container(
+      margin: EdgeInsets.only(left: 10.0, right: 10.0),
+      child: SelectFormField(
+        type: SelectFormFieldType.dropdown, // or can be dialog
+        initialValue: 'circle',
+        labelText: 'Civilité',
+        items: _civilitetems,
+        onChanged: (String change) {
+          setState(() {
+            civilite = change;
+            print(civilite);
+          });
+        },
+        validator: (val) => civilite.isEmpty? 'Entrer votre civilité': null,
+        onSaved: (val) => print(val),
+      ),
+    );
+  }
+
+  Widget _sexAndProfil(){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 150.0,
+          child: _buildSexeRow(),
+        ),
+        Container(
+          width: 150.0,
+          child: _buildProfilRow(),
+        ),
+        Container(
+          width: 150.0,
+          child: _buildcivilite(),
+        )
+      ],
+    );
+  }
+
   Widget _buildDateNaissRow() {
     return Container(
-        margin: EdgeInsets.only(top: 10.0),
-        child: Column(
-          children: <Widget>[
+      margin: EdgeInsets.only(top: 10.0,left: 10.0),
+      child: Column(
+        children: <Widget>[
+          DateTimePickerFormField(
+            validator: (val) => val==null? 'Entrer votre date de naissance': null,
+            inputType: inputType,
+            format: formats[inputType],
+            editable: true,
+            decoration: InputDecoration(
+                labelText: 'Date de naissance', border: OutlineInputBorder()),
+            onChanged: (DateTime datetime){
+              setState(() {
+                dateNais  = datetime;
+              });
+            },
+          )
+        ],
+      ),
+    );
+  }
 
-            Row(
+
+  Widget _buildMatriculeRow() {
+    return Container(
+        margin: EdgeInsets.only(top: 10.0),
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
               children: <Widget>[
-                IconButton(icon: Icon(Icons.calendar_today_sharp), onPressed: () => selectDate(context)),
-                Text('Date de naissance: ',style: TextStyle(fontSize: 20.0),),
-                Text(jour.toString(),style: TextStyle(fontSize: 20.0)),
-                Text('/', style: TextStyle(fontSize: 20.0)),
-                Text(mois.toString(), style: TextStyle(fontSize: 20.0)),
-                Text('/', style: TextStyle(fontSize: 20.0)),
-                Text(annee.toString(), style: TextStyle(fontSize: 20.0)),
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  onChanged: (String change){
+                    setState(() {
+                      matricule = change;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Matricule scolaire ISJ',
+                  ),
+                )
               ],
-            ),
-          ],
+            )
+        )
+    );
+  }
+
+  Widget _buildCNIRow() {
+    return Container(
+        margin: EdgeInsets.only(top: 10.0),
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  onChanged: (String change){
+                    setState(() {
+                      cni = change;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'CNI',
+                  ),
+                  validator: (val) => val.isEmpty ? 'Entrer votre numero de CNI': null,
+                )
+              ],
+            )
+        )
+    );
+  }
+
+  Widget _delivranceAndExpiration(){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 220.0,
+          child: _buildDelivranceRow(),
         ),
+        Container(
+          width: 220.0,
+          child: _buildExpirationRow(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDelivranceRow() {
+    return Container(
+      width: 210.0,
+      margin: EdgeInsets.only(top: 10.0,left: 10.0),
+      child: Column(
+        children: <Widget>[
+          DateTimePickerFormField(
+            validator: (val) => val==null? 'Entrer votre date de délivrance': null,
+            inputType: inputType,
+            format: formats[inputType],
+            editable: true,
+            decoration: InputDecoration(
+                labelText: "Date de délivrance", border: OutlineInputBorder()),
+            onChanged: (DateTime datetime){
+              setState(() {
+                dateDelivrance  = datetime;
+              });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
+
+  Widget _buildExpirationRow() {
+    return Container(
+      width: 210.0,
+      margin: EdgeInsets.only(top: 10.0,left: 10.0),
+      child: Column(
+        children: <Widget>[
+          DateTimePickerFormField(
+            validator: (val) => val==null? "Entrer votre date d'expiration": null,
+            inputType: inputType,
+            format: formats[inputType],
+            editable: true,
+            decoration: InputDecoration(
+                labelText: "Date d'expiration", border: OutlineInputBorder()),
+            onChanged: (DateTime datetime){
+              setState(() {
+                dateExpiration  = datetime;
+              });
+            },
+          )
+        ],
+      ),
     );
   }
 
@@ -236,6 +430,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             profile = change;
           });
         },
+        validator: (val) => profile.isEmpty? 'Entrer votre profil': null,
         onSaved: (val) => print(val),
       ),
     );
@@ -259,11 +454,25 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Etablissement',
                   ),
-                  validator: (val) => val.isEmpty? 'Entrer votre établissement':null,
                 )
               ],
             )
         )
+    );
+  }
+
+  Widget _emailAndTel(){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 220.0,
+          child: _buildMailRow(),
+        ),
+        Container(
+          width: 220.0,
+          child: _buildTelRow(),
+        ),
+      ],
     );
   }
 
@@ -286,6 +495,32 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     labelText: 'Email',
                   ),
                   validator: (val) => !EmailValidator.Validate(login,true)? 'Adresse mail non valide':null,
+                )
+              ],
+            )
+        )
+    );
+  }
+
+  Widget _buildTelRow() {
+    return Container(
+        margin: EdgeInsets.only(top: 10.0),
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  keyboardType: TextInputType.phone,
+                  onChanged: (String change){
+                    setState(() {
+                      telephone = change;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Téléphone',
+                  ),
+                  validator: (val) => val.isEmpty? 'Entrer votre téléphone':null,
                 )
               ],
             )
@@ -375,7 +610,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   pwd: mdp,
                   lastUpdate: update,
                 );
-                Data dataCreate = await newAccount(newUser);
+                Data dataCreate = await newAccount();
                 print(dataCreate.message);
                 if(dataCreate.status==1) {
                   dialog("Success!", "Votre compte a été créé",dataCreate.status);

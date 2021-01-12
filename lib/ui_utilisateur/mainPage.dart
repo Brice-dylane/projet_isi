@@ -3,6 +3,7 @@ import 'package:projet_isi/constants.dart';
 import 'package:projet_isi/entite/formation.dart';
 import '../api_manager.dart';
 import 'menu.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 
 
 class MainPage extends StatefulWidget{
