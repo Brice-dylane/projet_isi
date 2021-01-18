@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:projet_isi/api_manager.dart';
 import 'package:projet_isi/entite/insertUser.dart';
 import 'package:select_form_field/select_form_field.dart';
@@ -144,9 +145,11 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 _buildDateNaissRow(),
                 _buildMatriculeRow(),
                 _buildCNIRow(),
-                _delivranceAndExpiration(),
+                _buildDelivranceRow(),
+                _buildExpirationRow(),
                 _buildEtablissementRow(),
-                _emailAndTel(),
+                _buildMailRow(),
+                _buildTelRow(),
                 _buildMDPRow(),
                 _buildConfirmMDPRow(),
                 _buildCreateBtnRow()
@@ -162,7 +165,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     return Row(
       children: <Widget>[
         Icon(Icons.account_circle, color: mainColor,size: 80.0),
-        new Text(' Nouveau compte', style: TextStyle(fontSize: 35.0),)
+        new Text(' Nouveau compte', style: TextStyle(fontSize: 30.0),)
       ],
     );
   }
@@ -183,7 +186,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                 },
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
-                  labelText: 'Nom',
+                  labelText: 'Nom*',
                 ),
                 validator: (val) => val.isEmpty ? 'Entrer votre nom': null,
               )
@@ -209,7 +212,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Prénom',
+                    labelText: 'Prénom*',
                   ),
                   validator: (val) => prenom.isEmpty? 'Entrer votre prénom': null,
                 )
@@ -225,7 +228,8 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
         initialValue: 'circle',
-        labelText: 'Sexe',
+        labelText: 'Sexe*',
+        style: TextStyle(fontSize: 10),
         items: _sexitems,
         onChanged: (String change) {
           setState(() {
@@ -244,7 +248,8 @@ class _CreateAccountPage extends State<CreateAccountPage> {
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
         initialValue: 'circle',
-        labelText: 'Civilité',
+        labelText: 'Civilité*',
+        style: TextStyle(fontSize: 10),
         items: _civilitetems,
         onChanged: (String change) {
           setState(() {
@@ -258,19 +263,39 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }
 
+  Widget _buildProfilRow(){
+    return Container(
+      margin: EdgeInsets.only(left: 10.0, right: 10.0),
+      child: SelectFormField(
+        type: SelectFormFieldType.dropdown, // or can be dialog
+        initialValue: 'circle',
+        labelText: 'Profil*',
+        style: TextStyle(fontSize: 10),
+        items: _profilitems,
+        onChanged: (String change){
+          setState(() {
+            profile = change;
+          });
+        },
+        validator: (val) => profile.isEmpty? 'Entrer le profil': null,
+        onSaved: (val) => print(val),
+      ),
+    );
+  }
+
   Widget _sexAndProfil(){
     return Row(
       children: <Widget>[
         Container(
-          width: 150.0,
+          width: 110.0,
           child: _buildSexeRow(),
         ),
         Container(
-          width: 150.0,
+          width: 120.0,
           child: _buildProfilRow(),
         ),
         Container(
-          width: 150.0,
+          width: 110.0,
           child: _buildcivilite(),
         )
       ],
@@ -279,7 +304,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   Widget _buildDateNaissRow() {
     return Container(
-      margin: EdgeInsets.only(top: 10.0,left: 10.0),
+      margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
           DateTimePickerFormField(
@@ -288,7 +313,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: 'Date de naissance', border: OutlineInputBorder()),
+                labelText: 'Date de naissance*', border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateNais  = datetime;
@@ -342,7 +367,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'CNI',
+                    labelText: 'Numéro CNI*',
                   ),
                   validator: (val) => val.isEmpty ? 'Entrer votre numero de CNI': null,
                 )
@@ -356,11 +381,11 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     return Row(
       children: <Widget>[
         Container(
-          width: 220.0,
+          width: 160.0,
           child: _buildDelivranceRow(),
         ),
         Container(
-          width: 220.0,
+          width: 160.0,
           child: _buildExpirationRow(),
         ),
       ],
@@ -369,8 +394,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   Widget _buildDelivranceRow() {
     return Container(
-      width: 210.0,
-      margin: EdgeInsets.only(top: 10.0,left: 10.0),
+      margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
           DateTimePickerFormField(
@@ -379,7 +403,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: "Date de délivrance", border: OutlineInputBorder()),
+                labelText: "Date de délivrance*", border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateDelivrance  = datetime;
@@ -394,8 +418,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
 
   Widget _buildExpirationRow() {
     return Container(
-      width: 210.0,
-      margin: EdgeInsets.only(top: 10.0,left: 10.0),
+      margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
           DateTimePickerFormField(
@@ -404,7 +427,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: "Date d'expiration", border: OutlineInputBorder()),
+                labelText: "Date d'expiration*", border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateExpiration  = datetime;
@@ -416,25 +439,6 @@ class _CreateAccountPage extends State<CreateAccountPage> {
     );
   }
 
-
-  Widget _buildProfilRow(){
-    return Container(
-      margin: EdgeInsets.only(left: 10.0, right: 10.0),
-      child: SelectFormField(
-        type: SelectFormFieldType.dropdown, // or can be dialog
-        initialValue: 'circle',
-        labelText: 'Profil',
-        items: _profilitems,
-        onChanged: (String change){
-          setState(() {
-            profile = change;
-          });
-        },
-        validator: (val) => profile.isEmpty? 'Entrer votre profil': null,
-        onSaved: (val) => print(val),
-      ),
-    );
-  }
 
   Widget _buildEtablissementRow() {
     return Container(
@@ -492,7 +496,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Email*',
                   ),
                   validator: (val) => !EmailValidator.Validate(login,true)? 'Adresse mail non valide':null,
                 )
@@ -518,7 +522,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Téléphone',
+                    labelText: 'Téléphone*',
                   ),
                   validator: (val) => val.isEmpty? 'Entrer votre téléphone':null,
                 )
@@ -545,7 +549,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Mot de passe',
+                    labelText: 'Mot de passe*',
                   ),
                   validator: (val) => mdp.length<=6? 'Entrez un mot de passe avec au moins 6 caractères':null,
                 )
@@ -573,7 +577,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Confirmer le mot de passe',
+                    labelText: 'Confirmer le mot de passe*',
                   ),
                   validator: (val) => confirMDP != mdp ? 'Le mot de passe ne correspond pas':null,
                 )
@@ -599,18 +603,22 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             ),
             onPressed: () async {
               if(_formKey.currentState.validate()){
-                Utilisateur newUser = new Utilisateur(
-                  nom: nom,
-                  prenom: prenom,
-                  sexe: sexe,
-                  dateNais: _date,
-                  profil: profile,
-                  etablissement: etablissement,
-                  login: login,
-                  pwd: mdp,
-                  lastUpdate: update,
+                Utilisateur user = new Utilisateur(
+                    firstName: prenom,
+                    lastName: nom,
+                    sexe: sexe,
+                    authorityName: profile,
+                    civilite: civilite,
+                    dateOfBird: dateNais,
+                    matricule: matricule,
+                    numeroCni: cni,
+                    dateDelivrance: dateDelivrance,
+                    dateExpiration: dateExpiration,
+                    nomEtablissement: etablissement,
+                    email: login,
+                    phoneNumber: telephone
                 );
-                Data dataCreate = await newAccount();
+                Data dataCreate = await newAccount(user,update,confirMDP);
                 print(dataCreate.message);
                 if(dataCreate.status==1) {
                   dialog("Success!", "Votre compte a été créé",dataCreate.status);

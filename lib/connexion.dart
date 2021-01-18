@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:projet_isi/constants.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:projet_isi/ui_utilisateur/mainPage.dart';
+import 'api_manager.dart';
+import 'entite/insertUser.dart';
 import 'entite/utilisateur.dart';
 import 'newAccount.dart';
-
+import 'package:crypto/crypto.dart' as crypto;
+import 'package:convert/convert.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         Padding(
-          padding: EdgeInsets.only(top: 60.0, bottom: 2.0),
+          padding: EdgeInsets.only(top: 20.0, bottom: 2.0),
           child: new Container(
 
             decoration: BoxDecoration(
@@ -47,40 +52,41 @@ class _LoginPageState extends State<LoginPage> {
             Radius.circular(40),
           ),
           child: Container(
-              height: MediaQuery.of(context).size.height * 0.7,
-              width: MediaQuery.of(context).size.width * 0.8,
-              decoration: BoxDecoration(
-                color: Colors.white,
-              ),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        Text(
-                          "Apply to ISJ",
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.height / 17,
+            height: MediaQuery.of(context).size.height * 0.7,
+            width: MediaQuery.of(context).size.width * 0.8,
+            decoration: BoxDecoration(
+              color: Colors.white,
+            ),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  _buildLogo(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Text(
+                        "Apply to ISJ",
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.height / 20,
                             color: mainColor
-                          ),
                         ),
-                      ],
-                    ),
-                    _buildLoginRow(),
-                    _buildPasswordRow(),
-                    _buildForgetPasswordButton(),
-                    _buildLoginButton(),
-                    _buildOrRow(),
-                    _buildCreateBtnRow(),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                  _buildLoginRow(),
+                  _buildPasswordRow(),
+                  _buildForgetPasswordButton(),
+                  _buildLoginButton(),
+                  _buildOrRow(),
+                  _buildCreateBtnRow(),
+                ],
               ),
             ),
           ),
+        ),
       ],
     );
   }
@@ -160,7 +166,16 @@ class _LoginPageState extends State<LoginPage> {
             ),
             onPressed: () async {
               if(_formKey.currentState.validate()){
-                connexionUser();
+                //password  = convertMdp(password);
+                Data dataCreate = await fetchConnectionUser(login,password);
+                print(dataCreate.message);
+                if(dataCreate.status==1) {
+                  connexionUser();
+                }
+                else{
+                  dialog("Echec!", "Login ou mot de passe incorrecte",dataCreate.status);
+                }
+
               }
             },
             child: Text(
@@ -249,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    _buildLogo(),
+                    Container(margin: EdgeInsets.only(top: 50.0)),
                     _buildContainer(),
                   ],
                 )
@@ -267,8 +282,47 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void connexionUser(){
-    Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => MainPage()
-    ));
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) => MainPage(),
+      ),
+          (route) => false,
+    );
+  }
+
+
+  String convertMdp(String mdp){
+    var content = new Utf8Encoder().convert(mdp);
+    var md5 = crypto.md5;
+    var digest = md5.convert(content);
+    return hex.encode(digest.bytes);
+  }
+
+
+  Future<Null> dialog(String title, String desc, int status) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context){
+          return new SimpleDialog(
+            title: new Text(title, textScaleFactor: 1.4, style: TextStyle(color: status==1?Colors.green:Colors.redAccent),),
+            contentPadding: EdgeInsets.all(10.0),
+            children: <Widget> [
+              new Text(desc, style: TextStyle(color: status==1?Colors.green:Colors.redAccent)),
+              new Container(height: 20.0,),
+              new RaisedButton(
+                color: Colors.teal,
+                textColor: Colors.white,
+                child: new Text('OK'),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
   }
 
 }

@@ -43,8 +43,8 @@ class _Parametre extends State<Parametre>{
         mois = _date.month;
         annee = _date.year;
         print(_date.toString());
-        newUser.dateNais = _date;
-        newUser.lastUpdate = update;
+        newUser.dateOfBird = _date;
+        //newUser.lastUpdate = update;
       });
     }
   }
@@ -140,7 +140,7 @@ class _Parametre extends State<Parametre>{
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.nom = change;
+                      //newUser.nom = change;
                     });
                   },
                   decoration: InputDecoration(
@@ -166,7 +166,7 @@ class _Parametre extends State<Parametre>{
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.prenom = change;
+                      //newUser.prenom = change;
                     });
                   },
                   decoration: InputDecoration(
@@ -248,7 +248,7 @@ class _Parametre extends State<Parametre>{
         items: _profilitems,
         onChanged: (String val){
           setState(() {
-            newUser.profil = val;
+            //newUser.profil = val;
           });
         },
         onSaved: (val) => print(val),
@@ -268,7 +268,7 @@ class _Parametre extends State<Parametre>{
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.etablissement = change;
+                     // newUser.etablissement = change;
                     });
                   },
                   decoration: InputDecoration(
@@ -294,14 +294,14 @@ class _Parametre extends State<Parametre>{
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      newUser.login = change;
+                      //newUser.login = change;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Email',
                   ),
-                  validator: (val) => !EmailValidator.Validate(newUser.login,true)? 'Adresse mail non valide':null,
+                  //validator: (val) => !EmailValidator.Validate(newUser.login,true)? 'Adresse mail non valide':null,
                 )
               ],
             )
@@ -349,7 +349,7 @@ class _Parametre extends State<Parametre>{
                   onChanged: (String change){
                     setState(() {
                       confirMDP = convertMdp(change);
-                      newUser.pwd = confirMDP;
+                      //newUser.pwd = confirMDP;
                     });
                   },
                   decoration: InputDecoration(

@@ -3,14 +3,23 @@ import 'package:http/http.dart' as http;
 import 'entite/utilisateur.dart';
 import 'entite/insertUser.dart';
 
+//List des formations
 Future<List<Formation>> fetchFormation() async {
-  String url = "http://192.168.1.104/webservice/index.php?action=formlist";
+  String url = "http://172.20.10.2/webservice/index.php?action=formlist";
   final response = await http.get(url);
   return listFromMap(response.body).formation;
 }
 
-Future<Data> newAccount() async {
-  String url = "http://192.168.1.104/webservice/index.php?action=add&&login=dylane&&civilite=M&&matricule=etd23&&cni=234530821&&delivrance=2020-2-23&&expiration=2030-10-1&&tel=675432098&&nom=Nemadjeu&&prenom=Brice&&sexe=HOMME&&dateNais=1997-10-21&&profil=Etudiant&&etablissement=ISJ&&email=bricenemadjeu@gmail.com&&mdp=dylane&&update=2021-1-13";
+//Creation d'un compte utilisateur
+Future<Data> newAccount(Utilisateur user, DateTime update, String mdp) async {
+  String url = "http://192.168.1.111/webservice/index.php?action=add&login="+user.email+"&civilite="+user.civilite+"&matricule="+user.matricule+"&cni="+user.numeroCni+"&delivrance="+user.dateDelivrance.toString()+"&expiration="+user.dateExpiration.toString()+"&tel="+user.phoneNumber+"&nom="+user.firstName+"&prenom="+user.lastName+"&sexe="+user.sexe+"&dateNais="+user.dateOfBird.toString()+"&profil="+user.authorityName+"&etablissement="+user.nomEtablissement+"&email="+user.email+"&mdp="+mdp+"&update="+update.toString();
+  final response = await http.get(url);
+  return insertFromMap(response.body).data;
+}
+
+//Connexion utilisateur
+Future<Data> fetchConnectionUser(String map, String search) async {
+  String url = "http://172.20.10.2/webservice/index.php?action=connect&&map="+map+"&&search="+search;
   final response = await http.get(url);
   return insertFromMap(response.body).data;
 }
