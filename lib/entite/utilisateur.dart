@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-Welcome welcomeFromMap(String str) => Welcome.fromMap(json.decode(str));
+Welcome userFromMap(String str) => Welcome.fromMap(json.decode(str));
 
 String welcomeToMap(Welcome data) => json.encode(data.toMap());
 
@@ -9,14 +9,14 @@ class Welcome {
     this.utilisateur,
   });
 
-  List<Utilisateur> utilisateur;
+  Utilisateur utilisateur;
 
   factory Welcome.fromMap(Map<String, dynamic> json) => Welcome(
-    utilisateur: List<Utilisateur>.from(json["data"].map((x) => Utilisateur.fromMap(x))),
+    utilisateur: Utilisateur.fromMap(json["utilisateur"]),
   );
 
   Map<String, dynamic> toMap() => {
-    "utilisateur": List<dynamic>.from(utilisateur.map((x) => x.toMap())),
+    "utilisateur": utilisateur.toMap(),
   };
 }
 
@@ -63,6 +63,14 @@ class Utilisateur {
   String nomEtablissement;
   String email;
   String phoneNumber;
+
+  String getFirstName(){
+    return firstName;
+  }
+
+  String getLastName(){
+    return lastName;
+  }
 
   factory Utilisateur.fromMap(Map<String, dynamic> json) => Utilisateur(
     firstName: json["first_name"],

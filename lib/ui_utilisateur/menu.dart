@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:projet_isi/connexion.dart';
 import 'package:projet_isi/ui_utilisateur/mainPage.dart';
 import 'package:projet_isi/ui_utilisateur/parametreUser.dart';
@@ -28,19 +29,17 @@ class MenuUser extends StatelessWidget{
 
                     ),
                   ),
-                  Text(
-                    'Brice Nemadjeu',
-                    style: TextStyle(
-                        fontSize: 22.0,
-                        color: Colors.white
-                    ),
-                  ),
-                  Text(
-                    'bricenemadjeu@gmail.com',
-                    style: TextStyle(
-                        color: Colors.white
-                    ),
-                  )
+                  FutureBuilder(
+                    future: FlutterSession().get('token'),
+                      builder: (context,snapshot){
+                    return Text(
+                      snapshot.hasData? snapshot.data:'Chargement...',
+                      style: TextStyle(
+                          fontSize: 22.0,
+                          color: Colors.white
+                      ),
+                    );
+                  })
                 ],
               ),
             ),
@@ -82,8 +81,14 @@ class MenuUser extends StatelessWidget{
               style: TextStyle(fontSize: 18.0),
             ),
             onTap: (){
-              Navigator.push(context, new MaterialPageRoute(builder: (BuildContext context) => LoginPage()
-              ));
+              FlutterSession().set('token', '');
+              Navigator.pushAndRemoveUntil(
+                context,
+                MaterialPageRoute(
+                  builder: (BuildContext context) => LoginPage(),
+                ),
+                    (route) => false,
+              );
             },
           ),
         ],

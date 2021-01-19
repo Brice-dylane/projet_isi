@@ -1,12 +1,17 @@
 import 'dart:convert';
 
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
+import 'package:projet_isi/entite/insertUser.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:select_form_field/select_form_field.dart';
 
 import 'package:email_validator/email_validator.dart';
 import 'package:convert/convert.dart';
 import 'package:crypto/crypto.dart' as crypto;
+import 'package:projet_isi/api_manager.dart';
+import 'package:intl/intl.dart';
 
 import '../constants.dart';
 
@@ -19,12 +24,36 @@ class _Parametre extends State<Parametre>{
 
   String mdp='';
   String confirMDP='';
-  Utilisateur newUser;
   DateTime _date = DateTime.now();
   DateTime update = DateTime.now();
   int jour = DateTime.now().day;
   int mois = DateTime.now().month;
   int annee = DateTime.now().year;
+
+  final formats = {
+    InputType.both: DateFormat("EEEE, MMMM d, yyyy 'at' h:mma"),
+    InputType.date: DateFormat('yyyy-MM-dd'),
+    InputType.time: DateFormat("HH:mm"),
+  };
+
+  InputType inputType = InputType.date;
+  //Utilisateur utilisateur= FlutterSession().get('token') as Utilisateur;
+
+  String nom = '';
+  String prenom = '';
+  String sexe = '';
+  String profile = '';
+  String etablissement = '';
+  String login = '';
+  String civilite = '';
+  String matricule = '';
+  String cni = '';
+  String telephone = '';
+
+
+  DateTime dateNais= DateTime.now();
+  DateTime dateDelivrance= DateTime.now();
+  DateTime dateExpiration= DateTime.now();
 
 
   final _formKey = GlobalKey<FormState>();
@@ -42,9 +71,6 @@ class _Parametre extends State<Parametre>{
         jour = _date.day;
         mois = _date.month;
         annee = _date.year;
-        print(_date.toString());
-        newUser.dateOfBird = _date;
-        //newUser.lastUpdate = update;
       });
     }
   }
@@ -59,6 +85,21 @@ class _Parametre extends State<Parametre>{
       'value': 'Homme',
       'label': 'Homme',
       'icon': Icon(Icons.accessibility),
+    },
+  ];
+
+  final List<Map<String, dynamic>> _civilitetems = [
+    {
+      'value': 'M',
+      'label': 'M',
+    },
+    {
+      'value': 'Mme',
+      'label': 'Mme',
+    },
+    {
+      'value': 'Mlle',
+      'label': 'Mlle',
     },
   ];
 
@@ -79,6 +120,7 @@ class _Parametre extends State<Parametre>{
       'icon': Icon(Icons.emoji_people_rounded),
     },
   ];
+
 
 
   @override
@@ -103,12 +145,15 @@ class _Parametre extends State<Parametre>{
                 _buildTitleRow(),
                 _buildNomRow(),
                 _buildPrenomRow(),
-               // _buildSexeRow(),
                 _sexAndProfil(),
                 _buildDateNaissRow(),
-               // _buildProfilRow(),
+                _buildMatriculeRow(),
+                _buildCNIRow(),
+                _buildDelivranceRow(),
+                _buildExpirationRow(),
                 _buildEtablissementRow(),
                 _buildMailRow(),
+                _buildTelRow(),
                 _buildMDPRow(),
                 _buildConfirmMDPRow(),
                 _buildCreateBtnRow()
@@ -124,7 +169,7 @@ class _Parametre extends State<Parametre>{
     return Row(
       children: <Widget>[
         Icon(Icons.account_circle, color: mainColor,size: 80.0),
-        new Text(' Mon profile', style: TextStyle(fontSize: 35.0),)
+        new Text(' Nouveau compte', style: TextStyle(fontSize: 30.0),)
       ],
     );
   }
@@ -137,15 +182,16 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
+                 // initialValue: utilisateur.getLastName(),
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      //newUser.nom = change;
+                      nom = change;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Nom',
+                    labelText: 'Nom*',
                   ),
                   validator: (val) => val.isEmpty ? 'Entrer votre nom': null,
                 )
@@ -163,17 +209,18 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
+                 // initialValue: utilisateur.getFirstName(),
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      //newUser.prenom = change;
+                      prenom = change;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Prénom',
+                    labelText: 'Prénom*',
                   ),
-                  validator: (val) => val.isEmpty? 'Entrer votre prénom': null,
+                  validator: (val) => prenom.isEmpty? 'Entrer votre prénom': null,
                 )
               ],
             )
@@ -187,13 +234,57 @@ class _Parametre extends State<Parametre>{
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
         initialValue: 'circle',
-        labelText: 'Sex',
+        labelText: 'Sexe*',
+        style: TextStyle(fontSize: 10),
         items: _sexitems,
-        onChanged: (String val) {
+        onChanged: (String change) {
           setState(() {
-            newUser.sexe = val;
+            sexe = change;
           });
         },
+        validator: (val) => sexe.isEmpty? 'Entrer votre sexe': null,
+        onSaved: (val) => print(val),
+      ),
+    );
+  }
+
+  Widget _buildcivilite(){
+    return Container(
+      margin: EdgeInsets.only(left: 10.0, right: 10.0),
+      child: SelectFormField(
+        type: SelectFormFieldType.dropdown, // or can be dialog
+        initialValue: 'circle',
+        labelText: 'Civilité*',
+        style: TextStyle(fontSize: 10),
+        items: _civilitetems,
+        onChanged: (String change) {
+          setState(() {
+            civilite = change;
+            print(civilite);
+          });
+        },
+        validator: (val) => civilite.isEmpty? 'Entrer votre civilité': null,
+        onSaved: (val) => print(val),
+      ),
+    );
+  }
+
+  Widget _buildProfilRow(){
+    return Container(
+      margin: EdgeInsets.only(left: 10.0, right: 10.0),
+      child: SelectFormField(
+        readOnly: true,
+        type: SelectFormFieldType.dropdown, // or can be dialog
+        initialValue: '',
+        labelText: 'Profil*',
+        style: TextStyle(fontSize: 10),
+        items: _profilitems,
+        onChanged: (String change){
+          setState(() {
+            profile = change;
+          });
+        },
+        validator: (val) => profile.isEmpty? 'Entrer le profil': null,
         onSaved: (val) => print(val),
       ),
     );
@@ -203,14 +294,17 @@ class _Parametre extends State<Parametre>{
     return Row(
       children: <Widget>[
         Container(
-          width: 150.0,
+          width: 110.0,
           child: _buildSexeRow(),
         ),
         Container(
-          width: 150.0,
+          width: 120.0,
           child: _buildProfilRow(),
+        ),
+        Container(
+          width: 110.0,
+          child: _buildcivilite(),
         )
-
       ],
     );
   }
@@ -220,41 +314,138 @@ class _Parametre extends State<Parametre>{
       margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
-
-          Row(
-            children: <Widget>[
-              IconButton(icon: Icon(Icons.calendar_today_sharp), onPressed: () => selectDate(context)),
-              Text('Date de naissance: ',style: TextStyle(fontSize: 20.0),),
-              Text(jour.toString(),style: TextStyle(fontSize: 20.0)),
-              Text('/', style: TextStyle(fontSize: 20.0)),
-              Text(mois.toString(), style: TextStyle(fontSize: 20.0)),
-              Text('/', style: TextStyle(fontSize: 20.0)),
-              Text(annee.toString(), style: TextStyle(fontSize: 20.0)),
-            ],
-          ),
+          DateTimePickerFormField(
+            validator: (val) => val==null? 'Entrer votre date de naissance': null,
+            inputType: inputType,
+            format: formats[inputType],
+            editable: true,
+            decoration: InputDecoration(
+                labelText: 'Date de naissance*', border: OutlineInputBorder()),
+            onChanged: (DateTime datetime){
+              setState(() {
+                dateNais  = datetime;
+              });
+            },
+          )
         ],
       ),
     );
   }
 
 
-  Widget _buildProfilRow(){
+  Widget _buildMatriculeRow() {
     return Container(
-      margin: EdgeInsets.only(left: 10.0, right: 10.0),
-      child: SelectFormField(
-        type: SelectFormFieldType.dropdown, // or can be dialog
-        initialValue: 'circle',
-        labelText: 'Profile',
-        items: _profilitems,
-        onChanged: (String val){
-          setState(() {
-            //newUser.profil = val;
-          });
-        },
-        onSaved: (val) => print(val),
+        margin: EdgeInsets.only(top: 10.0),
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  onChanged: (String change){
+                    setState(() {
+                      matricule = change;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Matricule scolaire ISJ',
+                  ),
+                )
+              ],
+            )
+        )
+    );
+  }
+
+  Widget _buildCNIRow() {
+    return Container(
+        margin: EdgeInsets.only(top: 10.0),
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  keyboardType: TextInputType.text,
+                  onChanged: (String change){
+                    setState(() {
+                      cni = change;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Numéro CNI*',
+                  ),
+                  validator: (val) => val.isEmpty ? 'Entrer votre numero de CNI': null,
+                )
+              ],
+            )
+        )
+    );
+  }
+
+  Widget _delivranceAndExpiration(){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 160.0,
+          child: _buildDelivranceRow(),
+        ),
+        Container(
+          width: 160.0,
+          child: _buildExpirationRow(),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDelivranceRow() {
+    return Container(
+      margin: EdgeInsets.only(top: 10.0),
+      child: Column(
+        children: <Widget>[
+          DateTimePickerFormField(
+            validator: (val) => val==null? 'Entrer votre date de délivrance': null,
+            inputType: inputType,
+            format: formats[inputType],
+            editable: true,
+            decoration: InputDecoration(
+                labelText: "Date de délivrance*", border: OutlineInputBorder()),
+            onChanged: (DateTime datetime){
+              setState(() {
+                dateDelivrance  = datetime;
+              });
+            },
+          )
+        ],
       ),
     );
   }
+
+
+  Widget _buildExpirationRow() {
+    return Container(
+      margin: EdgeInsets.only(top: 10.0),
+      child: Column(
+        children: <Widget>[
+          DateTimePickerFormField(
+            validator: (val) => val==null? "Entrer votre date d'expiration": null,
+            inputType: inputType,
+            format: formats[inputType],
+            editable: true,
+            decoration: InputDecoration(
+                labelText: "Date d'expiration*", border: OutlineInputBorder()),
+            onChanged: (DateTime datetime){
+              setState(() {
+                dateExpiration  = datetime;
+              });
+            },
+          )
+        ],
+      ),
+    );
+  }
+
 
   Widget _buildEtablissementRow() {
     return Container(
@@ -264,22 +455,35 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
-                  autocorrect: true,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                     // newUser.etablissement = change;
+                      etablissement = change;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     labelText: 'Etablissement',
                   ),
-                  validator: (val) => val.isEmpty? 'Entrer votre établissement':null,
                 )
               ],
             )
         )
+    );
+  }
+
+  Widget _emailAndTel(){
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 220.0,
+          child: _buildMailRow(),
+        ),
+        Container(
+          width: 220.0,
+          child: _buildTelRow(),
+        ),
+      ],
     );
   }
 
@@ -291,17 +495,45 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  readOnly: true,
+                  initialValue: 'hh',
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
-                      //newUser.login = change;
+                      login = change;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email',
+                    labelText: 'Email*',
                   ),
-                  //validator: (val) => !EmailValidator.Validate(newUser.login,true)? 'Adresse mail non valide':null,
+                  validator: (val) => !EmailValidator.Validate(login,true)? 'Adresse mail non valide':null,
+                )
+              ],
+            )
+        )
+    );
+  }
+
+  Widget _buildTelRow() {
+    return Container(
+        margin: EdgeInsets.only(top: 10.0),
+        child: Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              children: <Widget>[
+                TextFormField(
+                  keyboardType: TextInputType.phone,
+                  onChanged: (String change){
+                    setState(() {
+                      telephone = change;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Téléphone*',
+                  ),
+                  validator: (val) => val.isEmpty? 'Entrer votre téléphone':null,
                 )
               ],
             )
@@ -326,9 +558,9 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Mot de passe',
+                    labelText: 'Mot de passe*',
                   ),
-                  validator: (val) => val.length<6? 'Entrez un mot de passe avec au moins 6 caractères':null,
+                  validator: (val) => mdp.length<=6? 'Entrez un mot de passe avec au moins 6 caractères':null,
                 )
               ],
             )
@@ -349,12 +581,12 @@ class _Parametre extends State<Parametre>{
                   onChanged: (String change){
                     setState(() {
                       confirMDP = convertMdp(change);
-                      //newUser.pwd = confirMDP;
+                      mdp = confirMDP;
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Confirmer le mot de passe',
+                    labelText: 'Confirmer le mot de passe*',
                   ),
                   validator: (val) => confirMDP != mdp ? 'Le mot de passe ne correspond pas':null,
                 )
@@ -380,11 +612,33 @@ class _Parametre extends State<Parametre>{
             ),
             onPressed: () async {
               if(_formKey.currentState.validate()){
-
+                Utilisateur user = new Utilisateur(
+                    firstName: prenom,
+                    lastName: nom,
+                    sexe: sexe,
+                    authorityName: profile,
+                    civilite: civilite,
+                    dateOfBird: dateNais,
+                    matricule: matricule,
+                    numeroCni: cni,
+                    dateDelivrance: dateDelivrance,
+                    dateExpiration: dateExpiration,
+                    nomEtablissement: etablissement,
+                    email: login,
+                    phoneNumber: telephone
+                );
+                Data dataCreate = await updateUser(user,update,confirMDP);
+                print(dataCreate.message);
+                if(dataCreate.status==1) {
+                  dialog("Success!", "Votre compte a été mis à jour",dataCreate.status);
+                }
+                else{
+                  dialog("Echec!", "Echec de la mise à jour",dataCreate.status);
+                }
               }
             },
             child: Text(
-              "Enregistrer",
+              "Mettre à jour",
               style: TextStyle(
                 color: Colors.white,
                 letterSpacing: 1.5,
@@ -398,12 +652,38 @@ class _Parametre extends State<Parametre>{
   }
 
 
-
   String convertMdp(String mdp){
     var content = new Utf8Encoder().convert(mdp);
     var md5 = crypto.md5;
     var digest = md5.convert(content);
     return hex.encode(digest.bytes);
   }
+
+  Future<Null> dialog(String title, String desc, int status) async {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context){
+          return new SimpleDialog(
+            title: new Text(title, textScaleFactor: 1.4, style: TextStyle(color: status==1?Colors.green:Colors.redAccent),),
+            contentPadding: EdgeInsets.all(10.0),
+            children: <Widget> [
+              new Text(desc, style: TextStyle(color: status==1?Colors.green:Colors.redAccent)),
+              new Container(height: 20.0,),
+              new RaisedButton(
+                color: Colors.teal,
+                textColor: Colors.white,
+                child: new Text('OK'),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+
 
 }

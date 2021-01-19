@@ -18,45 +18,7 @@ class _MainPage extends State<MainPage>{
     Container(
         child: Column(
           children: <Widget>[
-            Center(child: Text('Mes formations', style: TextStyle(fontSize: 25.0, color: Colors.white))),
-            Container(
-              margin: EdgeInsets.only(top: 20.0,left: 20.0),
-              child: Row(
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.all(8.0),
-                    color: Colors.teal,
-                    child: Column(
-                      children: <Widget>[
-                        Icon(Icons.badge, color: Colors.white,),
-                        Text('2 Formation(s)', style: TextStyle(color: Colors.white),),
-                        Text('Encours', style: TextStyle(color: Colors.white70),),
-                      ],
-                    ),
-                  ),
-                  Container(
-                    alignment: AlignmentDirectional.topEnd,
-                    padding: EdgeInsets.all(8.0),
-                    margin: EdgeInsets.only(left: 5.0),
-                    color: Colors.teal,
-                    child: Column(
-                      children: <Widget>[
-                        Icon(Icons.emoji_people, color: Colors.white,),
-                        Text('1 Formation(s)', style: TextStyle(color: Colors.white),),
-                        Text('Terminée', style: TextStyle(color: Colors.white70),),
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                      iconSize: 40.0,
-                      icon: Icon(Icons.refresh),
-                      onPressed: (){
-                          fetchFormation();
-                      })
-                ],
-
-              ),
-            ),
+            Center(child: Text('Formations ISJ', style: TextStyle(fontSize: 25.0, color: Colors.white))),
             FutureBuilder(
                 future: fetchFormation(),
                 builder: (context, snapshot){
@@ -131,8 +93,45 @@ class _MainPage extends State<MainPage>{
           ],
         ),
       ),
-    Center(child: Text('Formations ISJ')),
-    Center(child: Text('Paramètres'))
+    Center(child: Text('Mes Formations')),
+
+    Center(
+      child: Row(
+        children: <Widget>[
+          Container(
+            padding: EdgeInsets.all(8.0),
+            color: Colors.teal,
+            child: Column(
+              children: <Widget>[
+                Icon(Icons.badge, color: Colors.white,),
+                Text('2 Formation(s)', style: TextStyle(color: Colors.white),),
+                Text('Encours', style: TextStyle(color: Colors.white70),),
+              ],
+            ),
+          ),
+          Container(
+            alignment: AlignmentDirectional.topEnd,
+            padding: EdgeInsets.all(8.0),
+            margin: EdgeInsets.only(left: 5.0),
+            color: Colors.teal,
+            child: Column(
+              children: <Widget>[
+                Icon(Icons.emoji_people, color: Colors.white,),
+                Text('1 Formation(s)', style: TextStyle(color: Colors.white),),
+                Text('Terminée', style: TextStyle(color: Colors.white70),),
+              ],
+            ),
+          ),
+          IconButton(
+              iconSize: 40.0,
+              icon: Icon(Icons.refresh),
+              onPressed: (){
+                fetchFormation();
+              })
+        ],
+
+      ),
+    ),
   ];
 
 
@@ -149,18 +148,18 @@ class _MainPage extends State<MainPage>{
         iconSize: 30.0,
         items: [
           BottomNavigationBarItem(
-              icon: Icon(Icons.badge),
-            title: Text('Mes formations'),
+              icon: Icon(Icons.list),
+            title: Text('Formations ISJ'),
             backgroundColor: mainColor
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              title: Text('Formations ISJ'),
+              icon: Icon(Icons.badge),
+              title: Text('Mes formations'),
               backgroundColor: mainColor
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.account_circle),
-              title: Text('Profile'),
+              title: Text('Mon Rapport'),
               backgroundColor: mainColor
           ),
         ],

@@ -27,6 +27,8 @@ dependencies:
   select_form_field: "^1.1.0"
   email_validator: "0.1.4"
   datetime_picker_formfield: ^0.1.8
+  fluttertoast:
+  flutter_session:
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -41,7 +43,7 @@ dev_dependencies:
   http: ^0.12.2
 
 flutter_rename_app:
-  application_name: Apply
+  application_name: Apply to ISJ
   dart_package_name: projet_isi
   application_id: fr.apply.to.isj
   bundle_id: fr.apply.to.isj

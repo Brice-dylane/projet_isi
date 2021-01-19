@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_session/flutter_session.dart';
 import 'package:projet_isi/constants.dart';
 import 'package:email_validator/email_validator.dart';
 import 'package:projet_isi/ui_utilisateur/mainPage.dart';
@@ -120,7 +121,7 @@ class _LoginPageState extends State<LoginPage> {
         obscureText: true,
         onChanged: (value) {
           setState(() {
-            password = value;
+            password = convertMdp(value);
           });
         },
         decoration: InputDecoration(
@@ -170,6 +171,8 @@ class _LoginPageState extends State<LoginPage> {
                 Data dataCreate = await fetchConnectionUser(login,password);
                 print(dataCreate.message);
                 if(dataCreate.status==1) {
+                  //Utilisateur user = await fetchUser(login);
+                  await FlutterSession().set('token', login);
                   connexionUser();
                 }
                 else{

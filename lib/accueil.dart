@@ -57,7 +57,7 @@ class _AcceuilPage extends State<AcceuilPage> {
             width: MediaQuery.of(context).size.width / 4,
             child: new Image.asset("assets/logo.png", fit: BoxFit.cover),
           ),
-          Text('Apply To ISJ', style: TextStyle(fontSize: MediaQuery.of(context).size.height / 20, color: mainColor)),
+          Text('Apply to ISJ', style: TextStyle(fontSize: MediaQuery.of(context).size.height / 20, color: mainColor)),
         ],
       ),
     );
