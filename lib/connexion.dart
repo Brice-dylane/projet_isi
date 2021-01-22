@@ -11,6 +11,7 @@ import 'entite/utilisateur.dart';
 import 'newAccount.dart';
 import 'package:crypto/crypto.dart' as crypto;
 import 'package:convert/convert.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -20,6 +21,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   String login='', password='';
   final _formKey = GlobalKey<FormState>();
+  ProgressDialog progressDialog;
 
   Widget _buildLogo() {
     return Row(
@@ -152,6 +154,21 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Widget _buildLoginButton() {
+    progressDialog = ProgressDialog(context, type:ProgressDialogType.Normal);
+    progressDialog.style(
+        message: 'Connexion en cours...',
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600)
+    );
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -168,14 +185,17 @@ class _LoginPageState extends State<LoginPage> {
             onPressed: () async {
               if(_formKey.currentState.validate()){
                 //password  = convertMdp(password);
+                progressDialog.show();
                 Data dataCreate = await fetchConnectionUser(login,password);
-                print(dataCreate.message);
+
                 if(dataCreate.status==1) {
                   //Utilisateur user = await fetchUser(login);
+
                   await FlutterSession().set('token', login);
                   connexionUser();
                 }
                 else{
+                  progressDialog.hide();
                   dialog("Echec!", "Login ou mot de passe incorrecte",dataCreate.status);
                 }
 
@@ -243,6 +263,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+
     return SafeArea(
       child: Scaffold(
         resizeToAvoidBottomPadding: false,

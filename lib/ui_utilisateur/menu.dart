@@ -1,12 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
+import 'package:projet_isi/api_manager.dart';
 import 'package:projet_isi/connexion.dart';
+import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:projet_isi/ui_utilisateur/mainPage.dart';
 import 'package:projet_isi/ui_utilisateur/parametreUser.dart';
 
 import '../constants.dart';
 
 class MenuUser extends StatelessWidget{
+
+  String nom = '';
+  String prenom = '';
+  String login = '';
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -32,13 +39,57 @@ class MenuUser extends StatelessWidget{
                   FutureBuilder(
                     future: FlutterSession().get('token'),
                       builder: (context,snapshot){
-                    return Text(
-                      snapshot.hasData? snapshot.data:'Chargement...',
-                      style: TextStyle(
-                          fontSize: 22.0,
-                          color: Colors.white
-                      ),
-                    );
+                      if(snapshot.hasData){
+                        login = snapshot.data;
+                        return FutureBuilder<Utilisateur>(
+                          future: fetchUser(login),
+                          builder: (context, AsyncSnapshot<Utilisateur> snapshot1){
+                            if(snapshot1.hasData){
+                              Utilisateur user = snapshot1.data;
+                              prenom = user.getLastName();
+                              nom = user.getFirstName();
+                              return Container(
+                                alignment: Alignment.center,
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(
+                                      margin: EdgeInsets.only(left: 60.0),
+                                      alignment: Alignment.center,
+                                      child: Row(
+                                        children: <Widget>[
+                                          Text(
+                                            prenom,
+                                            style: TextStyle(
+                                                fontSize: 22.0,
+                                                color: Colors.white
+                                            ),
+                                          ),
+                                          Text(
+                                            ' '+nom.toUpperCase(),
+                                            style: TextStyle(
+                                                fontSize: 22.0,
+                                                color: Colors.white
+                                            ),
+                                          )
+                                        ],
+                                      ),
+                                    ),
+                                    Text(
+                                      login,
+                                      style: TextStyle(
+                                          fontSize: 15.0,
+                                          color: Colors.white
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              );
+                            }
+                            return Text('');
+                          },
+                        );
+                      }
+                    return Text('');
                   })
                 ],
               ),

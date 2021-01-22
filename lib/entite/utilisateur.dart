@@ -12,11 +12,11 @@ class Welcome {
   Utilisateur utilisateur;
 
   factory Welcome.fromMap(Map<String, dynamic> json) => Welcome(
-    utilisateur: Utilisateur.fromMap(json["utilisateur"]),
+    utilisateur: Utilisateur.fromMap(json["data"]),
   );
 
   Map<String, dynamic> toMap() => {
-    "utilisateur": utilisateur.toMap(),
+    "data": utilisateur.toMap(),
   };
 }
 
@@ -70,6 +70,50 @@ class Utilisateur {
 
   String getLastName(){
     return lastName;
+  }
+
+  String getSexe(){
+    return sexe;
+  }
+
+  String getCivilite(){
+    return civilite;
+  }
+
+  DateTime getDateNais(){
+    return dateOfBird;
+  }
+
+  String getCni(){
+    return numeroCni;
+  }
+
+  DateTime getDelivrance(){
+    return dateDelivrance;
+  }
+
+  DateTime getExpire(){
+    return dateExpiration;
+  }
+
+  String getEtablissement(){
+    return nomEtablissement;
+  }
+
+  String getEmail(){
+    return email;
+  }
+
+  String getTel(){
+    return phoneNumber;
+  }
+
+  String getMatricule(){
+    return matricule;
+  }
+
+  String getProfil(){
+    return authorityName;
   }
 
   factory Utilisateur.fromMap(Map<String, dynamic> json) => Utilisateur(

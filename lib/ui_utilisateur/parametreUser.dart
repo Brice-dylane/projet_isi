@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_session/flutter_session.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:projet_isi/entite/insertUser.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:select_form_field/select_form_field.dart';
@@ -22,6 +23,7 @@ _Parametre createState() => _Parametre();
 
 class _Parametre extends State<Parametre>{
 
+  Utilisateur user;
   String mdp='';
   String confirMDP='';
   DateTime _date = DateTime.now();
@@ -39,6 +41,7 @@ class _Parametre extends State<Parametre>{
   InputType inputType = InputType.date;
   //Utilisateur utilisateur= FlutterSession().get('token') as Utilisateur;
 
+  ProgressDialog progressDialog;
   String nom = '';
   String prenom = '';
   String sexe = '';
@@ -51,9 +54,9 @@ class _Parametre extends State<Parametre>{
   String telephone = '';
 
 
-  DateTime dateNais= DateTime.now();
-  DateTime dateDelivrance= DateTime.now();
-  DateTime dateExpiration= DateTime.now();
+  DateTime dateNais;
+  DateTime dateDelivrance;
+  DateTime dateExpiration;
 
 
   final _formKey = GlobalKey<FormState>();
@@ -138,43 +141,77 @@ class _Parametre extends State<Parametre>{
       child: Container(
         margin: EdgeInsets.only(top: 10.0,left: 10.0,right: 10.0, bottom: 20.0),
         child: Center(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: <Widget>[
-                _buildTitleRow(),
-                _buildNomRow(),
-                _buildPrenomRow(),
-                _sexAndProfil(),
-                _buildDateNaissRow(),
-                _buildMatriculeRow(),
-                _buildCNIRow(),
-                _buildDelivranceRow(),
-                _buildExpirationRow(),
-                _buildEtablissementRow(),
-                _buildMailRow(),
-                _buildTelRow(),
-                _buildMDPRow(),
-                _buildConfirmMDPRow(),
-                _buildCreateBtnRow()
-              ],
-            ),
+          child: Column(
+            children: <Widget>[
+              Center(
+                child: FutureBuilder(
+                  future: FlutterSession().get('token'),
+                  builder: (context,snapshot){
+                    String logi = snapshot.data;
+                    return FutureBuilder<Utilisateur>(
+                      future: userInfo(logi),
+                      initialData: user,
+                      builder: (context,AsyncSnapshot<Utilisateur> snapshot1){
+                        if(snapshot1.hasData){
+                          user = snapshot1.data;
+                          if(user.getProfil()=='ROLE_PROF'){
+                            profile = 'Professeur';
+                          }
+                          else if(user.getProfil()=='ROLE_ETUDIANT'){
+                            profile = 'Etudiant';
+                          }
+                          else{
+                            profile = 'Eleve';
+                          }
+                          return Form(
+                            key: _formKey,
+                            child: Column(
+                              children: <Widget>[
+                                _buildTitleRow(user.getProfil()),
+                                _buildNomRow(user.getFirstName()),
+                                _buildPrenomRow(user.getLastName()),
+                                _sexAndProfil(user.getSexe(), user.getCni()),
+                                _buildDateNaissRow(user.getDateNais()),
+                                _buildMatriculeRow(user.getMatricule(),user.getProfil()),
+                                _buildCNIRow(user.getCni()),
+                                _buildDelivranceRow(user.getDelivrance()),
+                                _buildExpirationRow(user.getExpire()),
+                                _buildEtablissementRow(user.getEtablissement(),user.getProfil()),
+                                _buildMailRow(user.getEmail()),
+                                _buildTelRow(user.getTel()),
+                                _buildMDPRow(),
+                                _buildConfirmMDPRow(),
+                                _buildCreateBtnRow(user)
+                              ],
+                            ),
+                          );
+                        }
+                        return CircularProgressIndicator();
+                      },
+                    );
+                  },
+                ),
+              )
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildTitleRow(){
+  Widget _buildTitleRow(String profil){
     return Row(
       children: <Widget>[
         Icon(Icons.account_circle, color: mainColor,size: 80.0),
-        new Text(' Nouveau compte', style: TextStyle(fontSize: 30.0),)
+        // ignore: unrelated_type_equality_checks
+        new Text(profil=='ROLE_ETUDIANT'?'Etudiant': '', style: TextStyle(fontSize: 30.0),),
+        new Text(profil=='ROLE_PROF'?'Professeur': '', style: TextStyle(fontSize: 30.0),),
+        new Text(profil=='ROLE_ELEVE'?'Elève':'', style: TextStyle(fontSize: 30.0),)
       ],
     );
   }
 
-  Widget _buildNomRow() {
+  Widget _buildNomRow(String name) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
@@ -182,7 +219,7 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
-                 // initialValue: utilisateur.getLastName(),
+                 //initialValue: name,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
@@ -191,9 +228,9 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Nom*',
+                    labelText: 'Nom*: '+name,
                   ),
-                  validator: (val) => val.isEmpty ? 'Entrer votre nom': null,
+                  //validator: (val) => val.isEmpty ? 'Entrer votre nom': null,
                 )
               ],
             )
@@ -201,7 +238,7 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _buildPrenomRow() {
+  Widget _buildPrenomRow(String prename) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
@@ -209,18 +246,19 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
-                 // initialValue: utilisateur.getFirstName(),
+                 //initialValue: prename,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
                       prenom = change;
+                      print(prenom);
                     });
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Prénom*',
+                    labelText: 'Prénom*: '+prename,
                   ),
-                  validator: (val) => prenom.isEmpty? 'Entrer votre prénom': null,
+                 // validator: (val) => prenom.isEmpty? 'Entrer votre prénom': null,
                 )
               ],
             )
@@ -228,99 +266,74 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _buildSexeRow(){
+  Widget _buildSexeRow(String s){
     return Container(
       margin: EdgeInsets.only(left: 10.0, right: 10.0),
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
-        initialValue: 'circle',
-        labelText: 'Sexe*',
-        style: TextStyle(fontSize: 10),
+        labelText: 'Sexe*: '+s,
+        style: TextStyle(fontSize: 15),
         items: _sexitems,
         onChanged: (String change) {
           setState(() {
             sexe = change;
           });
         },
-        validator: (val) => sexe.isEmpty? 'Entrer votre sexe': null,
+       // validator: (val) => sexe.isEmpty? 'Entrer votre sexe': null,
         onSaved: (val) => print(val),
       ),
     );
   }
 
-  Widget _buildcivilite(){
+  Widget _buildcivilite(String c){
     return Container(
       margin: EdgeInsets.only(left: 10.0, right: 10.0),
+      width: 450.0,
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
-        initialValue: 'circle',
-        labelText: 'Civilité*',
-        style: TextStyle(fontSize: 10),
+        labelText: 'Civilité*: '+c,
+        style: TextStyle(fontSize: 15),
         items: _civilitetems,
         onChanged: (String change) {
           setState(() {
             civilite = change;
-            print(civilite);
           });
         },
-        validator: (val) => civilite.isEmpty? 'Entrer votre civilité': null,
+        //validator: (val) => civilite.isEmpty? 'Entrer votre civilité': null,
         onSaved: (val) => print(val),
       ),
     );
   }
 
-  Widget _buildProfilRow(){
-    return Container(
-      margin: EdgeInsets.only(left: 10.0, right: 10.0),
-      child: SelectFormField(
-        readOnly: true,
-        type: SelectFormFieldType.dropdown, // or can be dialog
-        initialValue: '',
-        labelText: 'Profil*',
-        style: TextStyle(fontSize: 10),
-        items: _profilitems,
-        onChanged: (String change){
-          setState(() {
-            profile = change;
-          });
-        },
-        validator: (val) => profile.isEmpty? 'Entrer le profil': null,
-        onSaved: (val) => print(val),
-      ),
-    );
-  }
 
-  Widget _sexAndProfil(){
+  Widget _sexAndProfil(String sex, String ci){
     return Row(
       children: <Widget>[
         Container(
-          width: 110.0,
-          child: _buildSexeRow(),
+          width: 125.0,
+          child: _buildSexeRow(sex),
         ),
         Container(
-          width: 120.0,
-          child: _buildProfilRow(),
-        ),
-        Container(
-          width: 110.0,
-          child: _buildcivilite(),
+          width: 125.0,
+          child: _buildcivilite(ci),
         )
       ],
     );
   }
 
-  Widget _buildDateNaissRow() {
+  Widget _buildDateNaissRow(DateTime nais) {
     return Container(
       margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
           DateTimePickerFormField(
-            validator: (val) => val==null? 'Entrer votre date de naissance': null,
+            //validator: (val) => val==null? 'Entrer votre date de naissance': null,
             inputType: inputType,
+            initialDate: nais,
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: 'Date de naissance*', border: OutlineInputBorder()),
+                labelText: 'Date de naissance*: '+nais.toString(), border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateNais  = datetime;
@@ -333,7 +346,7 @@ class _Parametre extends State<Parametre>{
   }
 
 
-  Widget _buildMatriculeRow() {
+  Widget _buildMatriculeRow(String matricul,String profil) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
@@ -341,6 +354,7 @@ class _Parametre extends State<Parametre>{
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  readOnly: profil=='ROLE_PROF'? true : false,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
@@ -349,7 +363,7 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Matricule scolaire ISJ',
+                    labelText: 'Matricule scolaire ISJ: '+matricul,
                   ),
                 )
               ],
@@ -358,7 +372,7 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _buildCNIRow() {
+  Widget _buildCNIRow(String num_cni) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
@@ -374,9 +388,9 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Numéro CNI*',
+                    labelText: 'Numéro CNI*: '+num_cni,
                   ),
-                  validator: (val) => val.isEmpty ? 'Entrer votre numero de CNI': null,
+                  //validator: (val) => val.isEmpty ? 'Entrer votre numero de CNI': null,
                 )
               ],
             )
@@ -384,33 +398,20 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _delivranceAndExpiration(){
-    return Row(
-      children: <Widget>[
-        Container(
-          width: 160.0,
-          child: _buildDelivranceRow(),
-        ),
-        Container(
-          width: 160.0,
-          child: _buildExpirationRow(),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildDelivranceRow() {
+  Widget _buildDelivranceRow(DateTime de) {
     return Container(
       margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
           DateTimePickerFormField(
-            validator: (val) => val==null? 'Entrer votre date de délivrance': null,
+            //validator: (val) => val==null? 'Entrer votre date de délivrance': null,
             inputType: inputType,
+            initialDate: de,
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: "Date de délivrance*", border: OutlineInputBorder()),
+                labelText: "Date de délivrance*: "+de.toString(), border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateDelivrance  = datetime;
@@ -423,18 +424,19 @@ class _Parametre extends State<Parametre>{
   }
 
 
-  Widget _buildExpirationRow() {
+  Widget _buildExpirationRow(DateTime ex) {
     return Container(
       margin: EdgeInsets.only(top: 10.0),
       child: Column(
         children: <Widget>[
           DateTimePickerFormField(
-            validator: (val) => val==null? "Entrer votre date d'expiration": null,
+            //validator: (val) => val==null? "Entrer votre date d'expiration": null,
             inputType: inputType,
+            initialDate: ex,
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: "Date d'expiration*", border: OutlineInputBorder()),
+                labelText: "Date d'expiration*: "+ex.toString(), border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateExpiration  = datetime;
@@ -447,14 +449,15 @@ class _Parametre extends State<Parametre>{
   }
 
 
-  Widget _buildEtablissementRow() {
+  Widget _buildEtablissementRow(String etabli, String profil) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
             padding: EdgeInsets.all(10),
             child: Column(
               children: <Widget>[
-                TextFormField(
+                TextFormField(readOnly: profil=='ROLE_PROF'? true : false,
+                  //initialValue: etabli,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
@@ -463,7 +466,7 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Etablissement',
+                    labelText: 'Etablissement: '+etabli,
                   ),
                 )
               ],
@@ -472,22 +475,8 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _emailAndTel(){
-    return Row(
-      children: <Widget>[
-        Container(
-          width: 220.0,
-          child: _buildMailRow(),
-        ),
-        Container(
-          width: 220.0,
-          child: _buildTelRow(),
-        ),
-      ],
-    );
-  }
 
-  Widget _buildMailRow() {
+  Widget _buildMailRow(String mail) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
@@ -496,7 +485,6 @@ class _Parametre extends State<Parametre>{
               children: <Widget>[
                 TextFormField(
                   readOnly: true,
-                  initialValue: 'hh',
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
@@ -505,9 +493,8 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Email*',
+                    labelText: 'Email*: '+mail,
                   ),
-                  validator: (val) => !EmailValidator.Validate(login,true)? 'Adresse mail non valide':null,
                 )
               ],
             )
@@ -515,7 +502,7 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _buildTelRow() {
+  Widget _buildTelRow(String tel) {
     return Container(
         margin: EdgeInsets.only(top: 10.0),
         child: Padding(
@@ -531,9 +518,9 @@ class _Parametre extends State<Parametre>{
                   },
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
-                    labelText: 'Téléphone*',
+                    labelText: 'Téléphone*: '+tel,
                   ),
-                  validator: (val) => val.isEmpty? 'Entrer votre téléphone':null,
+                  //validator: (val) => val.isEmpty? 'Entrer votre téléphone':null,
                 )
               ],
             )
@@ -596,7 +583,22 @@ class _Parametre extends State<Parametre>{
     );
   }
 
-  Widget _buildCreateBtnRow() {
+  Widget _buildCreateBtnRow(Utilisateur utilisateur) {
+    progressDialog = ProgressDialog(context, type:ProgressDialogType.Normal);
+    progressDialog.style(
+        message: 'Mise à jour en cours...',
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600)
+    );
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -613,26 +615,34 @@ class _Parametre extends State<Parametre>{
             onPressed: () async {
               if(_formKey.currentState.validate()){
                 Utilisateur user = new Utilisateur(
-                    firstName: prenom,
-                    lastName: nom,
-                    sexe: sexe,
-                    authorityName: profile,
-                    civilite: civilite,
-                    dateOfBird: dateNais,
-                    matricule: matricule,
-                    numeroCni: cni,
-                    dateDelivrance: dateDelivrance,
-                    dateExpiration: dateExpiration,
-                    nomEtablissement: etablissement,
-                    email: login,
-                    phoneNumber: telephone
+                    firstName: nom==''? utilisateur.getFirstName() : nom,
+                    lastName: prenom==''? utilisateur.getLastName():prenom,
+                    sexe: sexe==''? utilisateur.getSexe():sexe,
+                    authorityName: utilisateur.getProfil(),
+                    civilite: civilite==''? utilisateur.getCivilite():civilite,
+                    dateOfBird: dateNais==null ? utilisateur.getDateNais():dateNais,
+                    matricule: matricule==''? utilisateur.getMatricule(): matricule,
+                    numeroCni: cni==''? utilisateur.getSexe():cni,
+                    dateDelivrance: dateDelivrance==null? utilisateur.getDelivrance():dateDelivrance,
+                    dateExpiration: dateExpiration==null ? utilisateur.getExpire(): dateExpiration,
+                    nomEtablissement: etablissement==''? utilisateur.getEtablissement():etablissement,
+                    email: login==''? utilisateur.getEmail():login,
+                    phoneNumber: telephone==''? utilisateur.getTel():telephone
                 );
+                progressDialog.show();
                 Data dataCreate = await updateUser(user,update,confirMDP);
-                print(dataCreate.message);
+                print(prenom);
+                print(etablissement);
                 if(dataCreate.status==1) {
+                  progressDialog.hide();
                   dialog("Success!", "Votre compte a été mis à jour",dataCreate.status);
+                  String t = await FlutterSession().get('token');
+                  setState(() {
+                    userInfo(t);
+                  });
                 }
                 else{
+                  progressDialog.hide();
                   dialog("Echec!", "Echec de la mise à jour",dataCreate.status);
                 }
               }
@@ -684,6 +694,10 @@ class _Parametre extends State<Parametre>{
     );
   }
 
+  Future<Utilisateur> userInfo(String login) async{
+    Utilisateur user = await fetchUser(login);
+    return user;
+  }
 
 
 }

@@ -27,6 +27,7 @@ dependencies:
   select_form_field: "^1.1.0"
   email_validator: "0.1.4"
   datetime_picker_formfield: ^0.1.8
+  progress_dialog: ^1.2.4
   fluttertoast:
   flutter_session:
 
