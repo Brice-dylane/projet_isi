@@ -39,7 +39,6 @@ class _Parametre extends State<Parametre>{
   };
 
   InputType inputType = InputType.date;
-  //Utilisateur utilisateur= FlutterSession().get('token') as Utilisateur;
 
   ProgressDialog progressDialog;
   String nom = '';
@@ -170,7 +169,7 @@ class _Parametre extends State<Parametre>{
                                 _buildTitleRow(user.getProfil()),
                                 _buildNomRow(user.getFirstName()),
                                 _buildPrenomRow(user.getLastName()),
-                                _sexAndProfil(user.getSexe(), user.getCni()),
+                                _sexAndProfil(user.getSexe(), user.getCivilite()),
                                 _buildDateNaissRow(user.getDateNais()),
                                 _buildMatriculeRow(user.getMatricule(),user.getProfil()),
                                 _buildCNIRow(user.getCni()),
@@ -288,7 +287,6 @@ class _Parametre extends State<Parametre>{
   Widget _buildcivilite(String c){
     return Container(
       margin: EdgeInsets.only(left: 10.0, right: 10.0),
-      width: 450.0,
       child: SelectFormField(
         type: SelectFormFieldType.dropdown, // or can be dialog
         labelText: 'Civilité*: '+c,
@@ -310,11 +308,11 @@ class _Parametre extends State<Parametre>{
     return Row(
       children: <Widget>[
         Container(
-          width: 125.0,
+          width: 185.0,
           child: _buildSexeRow(sex),
         ),
         Container(
-          width: 125.0,
+          width: 140.0,
           child: _buildcivilite(ci),
         )
       ],
@@ -333,7 +331,7 @@ class _Parametre extends State<Parametre>{
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: 'Date de naissance*: '+nais.toString(), border: OutlineInputBorder()),
+                labelText: 'Date de naissance*: '+nais.year.toString()+'-'+nais.month.toString()+'-'+nais.day.toString(), border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateNais  = datetime;
@@ -411,7 +409,7 @@ class _Parametre extends State<Parametre>{
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: "Date de délivrance*: "+de.toString(), border: OutlineInputBorder()),
+                labelText: "Date de délivrance*: "+de.year.toString()+'-'+de.month.toString()+'-'+de.day.toString(), border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateDelivrance  = datetime;
@@ -436,7 +434,7 @@ class _Parametre extends State<Parametre>{
             format: formats[inputType],
             editable: true,
             decoration: InputDecoration(
-                labelText: "Date d'expiration*: "+ex.toString(), border: OutlineInputBorder()),
+                labelText: "Date d'expiration*: "+ex.year.toString()+'-'+ex.month.toString()+'-'+ex.day.toString(), border: OutlineInputBorder()),
             onChanged: (DateTime datetime){
               setState(() {
                 dateExpiration  = datetime;
@@ -568,7 +566,6 @@ class _Parametre extends State<Parametre>{
                   onChanged: (String change){
                     setState(() {
                       confirMDP = convertMdp(change);
-                      mdp = confirMDP;
                     });
                   },
                   decoration: InputDecoration(

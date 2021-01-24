@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:projet_isi/api_manager.dart';
 import 'package:projet_isi/entite/insertUser.dart';
 import 'package:select_form_field/select_form_field.dart';
@@ -21,7 +22,7 @@ class CreateAccountPage extends StatefulWidget{
 
 class _CreateAccountPage extends State<CreateAccountPage> {
 
-
+  ProgressDialog progressDialog;
   String mdp='';
   String confirMDP='';
   DateTime _date = DateTime.now();
@@ -336,6 +337,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  readOnly: profile=='Professeur'?  true : false,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
@@ -371,7 +373,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     border: OutlineInputBorder(),
                     labelText: 'Numéro CNI*',
                   ),
-                  validator: (val) => val.isEmpty ? 'Entrer votre numero de CNI': null,
+                  validator: (val) => val=='' ? 'Entrer votre numero de CNI': null,
                 )
               ],
             )
@@ -450,6 +452,7 @@ class _CreateAccountPage extends State<CreateAccountPage> {
             child: Column(
               children: <Widget>[
                 TextFormField(
+                  readOnly: profile=='Professeur'?  true : false,
                   keyboardType: TextInputType.text,
                   onChanged: (String change){
                     setState(() {
@@ -574,7 +577,6 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                   onChanged: (String change){
                     setState(() {
                       confirMDP = convertMdp(change);
-                      mdp = confirMDP;
                     });
                   },
                   decoration: InputDecoration(
@@ -590,6 +592,21 @@ class _CreateAccountPage extends State<CreateAccountPage> {
   }
 
   Widget _buildCreateBtnRow() {
+    progressDialog = ProgressDialog(context, type:ProgressDialogType.Normal);
+    progressDialog.style(
+        message: 'Création en cours...',
+        borderRadius: 10.0,
+        backgroundColor: Colors.white,
+        progressWidget: CircularProgressIndicator(),
+        elevation: 10.0,
+        insetAnimCurve: Curves.easeInOut,
+        progress: 0.0,
+        maxProgress: 100.0,
+        progressTextStyle: TextStyle(
+            color: Colors.black, fontSize: 13.0, fontWeight: FontWeight.w400),
+        messageTextStyle: TextStyle(
+            color: Colors.black, fontSize: 19.0, fontWeight: FontWeight.w600)
+    );
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
@@ -620,13 +637,16 @@ class _CreateAccountPage extends State<CreateAccountPage> {
                     email: login,
                     phoneNumber: telephone
                 );
+                progressDialog.show();
                 Data dataCreate = await newAccount(user,update,confirMDP);
                 print(dataCreate.message);
                 if(dataCreate.status==1) {
-                  dialog("Success!", "Votre compte a été créé",dataCreate.status);
+                  progressDialog.hide();
+                  dialog("Success!", "Votre compte a été créé.",dataCreate.status);
                 }
                 else{
-                  dialog("Echec!", "L'adresse mail est déja utilisée",dataCreate.status);
+                  progressDialog.hide();
+                  dialog("Echec!", "Veillez revoir vos informations.",dataCreate.status);
                 }
               }
             },
