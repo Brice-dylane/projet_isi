@@ -1,35 +1,88 @@
 import 'dart:io';
+import 'dart:math';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:projet_isi/entite/formation.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:dio/dio.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
+import 'package:http/http.dart' as http;
 import '../constants.dart';
 
-// ignore: must_be_immutable
-class Candidacy extends StatelessWidget{
-  Formation formation;
-  Utilisateur user;
-  Candidacy(Formation formation,Utilisateur user){
-    this.formation = formation;
-    this.user = user;
-  }
 
+
+class Candidacy extends StatefulWidget{
+  static Formation formation;
+  static Utilisateur user;
+  Candidacy(Formation formation1,Utilisateur user1){
+    formation = formation1;
+    user = user1;
+  }
+  @override
+  State<StatefulWidget> createState() {
+    return _Candidacy();
+  }
+}
+
+
+class _Candidacy extends State<Candidacy>{
   File selectedfile;
   Response response;
   String progress;
   Dio dio = new Dio();
+  String fileName = '';
 
   void selectFile() async {
-    FilePickerResult result = await FilePicker.platform.pickFiles();
+    selectedfile = await FilePicker.getFile(
+      type: FileType.custom,
+      allowedExtensions: ['zip', 'pdf', 'docx'],
+      //allowed extension to choose
+    );
+    setState(() {
+      fileName = basename(selectedfile.path);
+    });
+  }
 
-    if(result != null) {
-      selectedfile = File(result.files.single.path);
-    } else {
-      // User canceled the picker
+
+  uploadFile() async {
+    var random = new Random();
+    String code = Candidacy.formation.formationName.substring(0,3).toUpperCase()+""+Candidacy.formation.formationSpecialite.substring(0,3).toUpperCase()+""+Candidacy.formation.startDate.year.toString()+""+random.nextInt(10000).toString();
+    final uri = Uri.parse("http://192.168.1.104/webservice/candidacy.php");
+    var request = http.MultipartRequest('POST',uri);
+    request.fields['created'] = DateTime.now().toString();
+    request.fields['email'] = Candidacy.user.getEmail();
+    request.fields['formation'] = Candidacy.formation.formationName;
+    request.fields['code'] = code;
+    var pic = await http.MultipartFile.fromPath("file", selectedfile.path);
+    request.files.add(pic);
+    var response = await request.send();
+
+    if (response.statusCode == 200) {
+      print('File Uploded');
+    }else{
+      print('File Not Uploded');
     }
+
+    /*
+    FormData formdata = FormData.fromMap({
+      "file": await MultipartFile.fromFile(
+          selectedfile.path,
+          filename: basename(selectedfile.path)
+      ),
+    });
+
+    response = await dio.post(uploadurl,
+      data: formdata,
+      );
+
+    if(response.statusCode == 200){
+      print(response.toString());
+      //print response from server
+    }else{
+      print("Error during connection to server.");
+    }*/
   }
 
 
@@ -37,7 +90,7 @@ class Candidacy extends StatelessWidget{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(formation.formationName.toUpperCase()),
+        title: Text(Candidacy.formation.formationName.toUpperCase()),
       ),
       body: _buildContainer(),
     );
@@ -47,51 +100,52 @@ class Candidacy extends StatelessWidget{
     return Container(
       child: ListView(
         children: <Widget>[
-              Card(
-                elevation: 10.0,
-                margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                color: Colors.white,
-                child: Column(
-                  children: <Widget>[
-                    Text('Spécialité', style: TextStyle(color: mainColor,fontSize: 25), textAlign: TextAlign.left,),
-                    Text(formation.formationSpecialite, style: TextStyle(color:mainColor,fontSize: 17.0))
-                  ],
-                ),
-              ),
+          Card(
+            elevation: 10.0,
+            margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Text('Spécialité', style: TextStyle(color: mainColor,fontSize: 25), textAlign: TextAlign.left,),
+                Text(Candidacy.formation.formationSpecialite, style: TextStyle(color:mainColor,fontSize: 17.0))
+              ],
+            ),
+          ),
 
-              Card(
-                elevation: 10.0,
-                margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                color: Colors.white,
-                child: Column(
-                  children: <Widget>[
-                    Text('Durée', style: TextStyle(color: mainColor,fontSize: 25)),
-                    Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(), style: TextStyle(color: mainColor))
-                  ],
-                ),
-              ),
+          Card(
+            elevation: 10.0,
+            margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Text('Durée', style: TextStyle(color: mainColor,fontSize: 25)),
+                Text("Du "+Candidacy.formation.startDate.day.toString()+"-"+Candidacy.formation.startDate.month.toString()+"-"+Candidacy.formation.startDate.year.toString()+" au "+Candidacy.formation.endDate.day.toString()+"-"+Candidacy.formation.endDate.month.toString()+"-"+Candidacy.formation.endDate.year.toString(), style: TextStyle(color: mainColor))
+              ],
+            ),
+          ),
 
-              Card(
-                elevation: 10.0,
-                margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
-                color: Colors.white,
-                child: Column(
-                  children: <Widget>[
-                    Text('Description', style: TextStyle(color: mainColor,fontSize: 25)),
-                    Text(formation.description, style: TextStyle(color: mainColor))
-                  ],
-                ),
-              ),
+          Card(
+            elevation: 10.0,
+            margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+            color: Colors.white,
+            child: Column(
+              children: <Widget>[
+                Text('Description', style: TextStyle(color: mainColor,fontSize: 25)),
+                Text(Candidacy.formation.description, style: TextStyle(color: mainColor))
+              ],
+            ),
+          ),
 
           Container(margin: EdgeInsets.all(20),),
 
           Container(
+
             alignment: Alignment.center,
             margin: EdgeInsets.all(10),
             //show file name here
             child:selectedfile == null?
             Text("Sélectioner un fichier"):
-            Text(basename(selectedfile.path)),
+            Text(fileName),
           ),
 
           Container(
@@ -111,12 +165,12 @@ class Candidacy extends StatelessWidget{
 
           Container(
               margin: EdgeInsets.only(left: 150.0, right: 150.0),
-              child:RaisedButton.icon(padding: EdgeInsets.all(20),
+              child:RaisedButton.icon(padding: EdgeInsets.all(15),
                 onPressed: (){
-                  selectFile();
+                  uploadFile();
                 },
                 icon: Icon(Icons.badge),
-                label: Text(user.getProfil()=='ROLE_PROF'? 'Former':'Se former',style: TextStyle(fontSize: 33),),
+                label: Text(Candidacy.user.getProfil()=='ROLE_PROF'? 'Former':'Se former',style: TextStyle(fontSize: 28),),
                 color: mainColor,
                 colorBrightness: Brightness.dark,
               )
@@ -125,5 +179,4 @@ class Candidacy extends StatelessWidget{
       ),
     );
   }
-
 }
