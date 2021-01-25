@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:progress_dialog/progress_dialog.dart';
 import 'package:projet_isi/entite/formation.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:dio/dio.dart';
@@ -33,6 +34,8 @@ class _Candidacy extends State<Candidacy>{
   String progress;
   Dio dio = new Dio();
   String fileName = '';
+  bool isEnable = true;
+  ProgressDialog progressDialog;
 
   void selectFile() async {
     selectedfile = await FilePicker.getFile(
@@ -60,29 +63,13 @@ class _Candidacy extends State<Candidacy>{
     var response = await request.send();
 
     if (response.statusCode == 200) {
+      setState(() {
+        isEnable = false;
+      });
       print('File Uploded');
     }else{
       print('File Not Uploded');
     }
-
-    /*
-    FormData formdata = FormData.fromMap({
-      "file": await MultipartFile.fromFile(
-          selectedfile.path,
-          filename: basename(selectedfile.path)
-      ),
-    });
-
-    response = await dio.post(uploadurl,
-      data: formdata,
-      );
-
-    if(response.statusCode == 200){
-      print(response.toString());
-      //print response from server
-    }else{
-      print("Error during connection to server.");
-    }*/
   }
 
 
@@ -166,9 +153,7 @@ class _Candidacy extends State<Candidacy>{
           Container(
               margin: EdgeInsets.only(left: 150.0, right: 150.0),
               child:RaisedButton.icon(padding: EdgeInsets.all(15),
-                onPressed: (){
-                  uploadFile();
-                },
+                onPressed: isEnable ? ()=> uploadFile() : null,
                 icon: Icon(Icons.badge),
                 label: Text(Candidacy.user.getProfil()=='ROLE_PROF'? 'Former':'Se former',style: TextStyle(fontSize: 28),),
                 color: mainColor,
@@ -179,4 +164,6 @@ class _Candidacy extends State<Candidacy>{
       ),
     );
   }
+
+
 }
