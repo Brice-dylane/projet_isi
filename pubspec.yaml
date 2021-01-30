@@ -30,9 +30,9 @@ dependencies:
   progress_dialog: ^1.2.4
   fluttertoast:
   flutter_session:
-  dio: ^3.0.9
   path: ^1.6.4
   file_picker: ^1.9.0+1
+  http: ^0.12.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -43,7 +43,6 @@ dev_dependencies:
     sdk: flutter
   flutter_launcher_icons: ^0.8.1
   flutter_rename_app: ^1.0.0
-  http: ^0.12.2
 
 flutter_rename_app:
   application_name: Apply to ISJ

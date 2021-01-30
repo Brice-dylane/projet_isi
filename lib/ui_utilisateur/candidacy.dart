@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:progress_dialog/progress_dialog.dart';
 import 'package:projet_isi/entite/formation.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
-import 'package:dio/dio.dart';
+//import 'package:dio/dio.dart';
 import 'package:flutter/widgets.dart';
 import 'package:path/path.dart';
 import 'package:http/http.dart' as http;
@@ -30,9 +30,9 @@ class Candidacy extends StatefulWidget{
 
 class _Candidacy extends State<Candidacy>{
   File selectedfile;
-  Response response;
+ // Response response;
   String progress;
-  Dio dio = new Dio();
+  //Dio dio = new Dio();
   String fileName = '';
   bool isEnable = true;
   ProgressDialog progressDialog;

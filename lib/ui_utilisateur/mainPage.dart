@@ -3,6 +3,8 @@ import 'package:flutter_session/flutter_session.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:projet_isi/constants.dart';
 import 'package:projet_isi/entite/formation.dart';
+import 'package:projet_isi/entite/formationUser.dart';
+import 'package:projet_isi/entite/stateFormUser.dart';
 import 'package:projet_isi/entite/utilisateur.dart';
 import 'package:projet_isi/ui_utilisateur/candidacy.dart';
 import '../api_manager.dart';
@@ -19,6 +21,7 @@ class _MainPage extends State<MainPage>{
   int _currentIndex = 0;
   final tabs = [
 
+    //---------------------------------------------Formations ISJ-------------------------------------------------------
     Container(
         child: Column(
           children: <Widget>[
@@ -123,40 +126,182 @@ class _MainPage extends State<MainPage>{
           ],
         ),
       ),
-    Center(child: Text('Mes Formations')),
+  //----------------------------------------------------Fin-----------------------------------------------------------------------
 
-    Column(
-      children: <Widget>[
-        Flexible(
-          flex: 2,
-            child: Container(
-              padding: EdgeInsets.all(8.0),
-              color: Colors.teal,
-              child: Column(
-                children: <Widget>[
-                  Icon(Icons.badge, color: Colors.white,),
-                  Text('2 Formation(s)', style: TextStyle(color: Colors.white),),
-                  Text('Encours', style: TextStyle(color: Colors.white70),),
-                ],
-              ),
-            )
-        ),
-        Flexible(flex: 2 ,child: Container(
-          alignment: AlignmentDirectional.topEnd,
-          padding: EdgeInsets.all(8.0),
-          margin: EdgeInsets.only(left: 5.0),
-          color: Colors.teal,
-          child: Column(
+  //--------------------------------------------------Formations utilisateur------------------------------------------------------
+    Container(
+      child: Column(
+        children: <Widget>[
+          Center(child: Row(
             children: <Widget>[
-              Icon(Icons.emoji_people, color: Colors.white,),
-              Text('1 Formation(s)', style: TextStyle(color: Colors.white),),
-              Text('Terminée', style: TextStyle(color: Colors.white70),),
+              Text('Mes candidatures', style: TextStyle(fontSize: 25.0, color: mainColor)),
             ],
-          ),
-        ))
-      ],
-    ),
+          )),
+          FutureBuilder(
+            future: FlutterSession().get('token'),
+            builder: (context, snapshot1){
+              if(snapshot1.hasData){
+                String log = snapshot1.data;
+                return  FutureBuilder<Utilisateur>(
+                    future: fetchUser(log),
+                    builder: (context, AsyncSnapshot<Utilisateur> snapshot2){
+                      if(snapshot2.hasData){
+                        Utilisateur user = snapshot2.data;
+                        // ----------------------------------------------------------------------------------------------
+                        return FutureBuilder(
+                          future: userFormation(user.getEmail()),
+                          builder: (context, snapshot){
+                            if(snapshot.hasData){
+                              return Expanded(
+                                child: ListView.builder(
+                                    physics: BouncingScrollPhysics(),
+                                    itemCount: snapshot.data.length,
+                                    shrinkWrap: true,
+                                    itemBuilder:(BuildContext context, index){
+                                      FormationUser formation = snapshot.data[index];
+                                      String stateForm = formation.candidacyState;
+                                      if(stateForm=='LOAD'){
+                                        stateForm='En cours';
+                                      }
+                                      else if(stateForm=='SUCCESS'){
+                                        stateForm = 'Approuvée';
+                                      }
+                                      else if(stateForm=='FAILD'){
+                                        stateForm = 'Rejetée';
+                                      }
+                                      return Card(
+                                        elevation: 10.0,
+                                        margin: EdgeInsets.only(top: 20.0,left: 20.0, right: 20.0),
+                                        color: mainColor,
+                                        child: Container(
+                                          margin: EdgeInsets.all(15.0),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Row(
+                                                children: <Widget>[
+                                                  Icon(Icons.badge, color: Colors.white),
+                                                  Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(color: Colors.white))
+                                                ],
+                                              ),
 
+                                              Container(
+                                                margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                                                child: Text('Spécialité: ${formation.formationSpecialite}',style: TextStyle(color: Colors.white)),
+                                              ),
+                                              Text('${formation.description}',style: TextStyle(color: Colors.white)),
+                                              Container(
+                                                  alignment: Alignment.bottomLeft,
+                                                  margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
+                                                  child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 15.0, color: Colors.white))
+                                              ),
+                                              Container(
+                                                alignment: Alignment.bottomRight,
+                                                child: Text('Status: ${stateForm}',style: TextStyle(color: stateForm=='Rejetée'?Colors.red[200]:Colors.teal[300],fontSize: 20.0)),
+                                              ),
+                                              Container(
+                                                  alignment: Alignment.bottomRight,
+                                                  margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
+                                                  child: Text("Redigée le "+formation.createTime.day.toString()+"-"+formation.createTime.month.toString()+"-"+formation.createTime.year.toString(),style: TextStyle(fontSize: 15.0, color: Colors.white))
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    }
+                                ),
+                              );
+                            }
+                            return CircularProgressIndicator();
+                          },
+                        );
+                        //-------------------------------------------------------------------------------------------------------------------
+                      }
+                      return CircularProgressIndicator();
+                    }
+                );
+              }
+              return CircularProgressIndicator();
+            },
+
+          ),
+
+        ],
+      ),
+    ),
+//---------------------------------------------------------------------------------------------------------------------------------
+
+
+  //----------------------------------------------------Bilan formations-----------------------------------------------------------
+
+   Center(
+       child: FutureBuilder(
+         future: FlutterSession().get('token'),
+         builder: (context,snapshot){
+           if(snapshot.hasData){
+             String login = snapshot.data;
+             return FutureBuilder<FormationState>(
+                 future: staterepport(login),
+                 builder: (context, AsyncSnapshot<FormationState> snapshot1){
+                   if(snapshot1.hasData){
+                     FormationState formState = snapshot1.data;
+                     if(formState.status==1){
+                       return Column(
+                             children: <Widget>[
+                               Container(
+                                 padding: EdgeInsets.all(8.0),
+                                 margin: EdgeInsets.all(30.0),
+                                 width: 185.0,
+                                 color: Colors.orange[800],
+                                 child: Column(
+                                   children: <Widget>[
+                                     Icon(Icons.badge, color: Colors.white, size: 40.0,),
+                                     Text('${formState.load} Formation(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
+                                     Text('Encours', style: TextStyle(color: Colors.white70,fontSize: 22.0)),
+                                   ],
+                                 ),
+                               ),
+                               Container(
+                                 margin: EdgeInsets.all(30.0),
+                                 padding: EdgeInsets.all(8.0),
+                                 width: 185.0,
+                                 color: Colors.teal[600],
+                                 child: Column(
+                                   children: <Widget>[
+                                     Icon(Icons.badge, color: Colors.white, size: 40.0),
+                                     Text('${formState.success} Formation(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
+                                     Text('Approvée(s)', style: TextStyle(color: Colors.white70,fontSize: 22.0)),
+                                   ],
+                                 ),
+                               ),
+                               Container(
+                                 margin: EdgeInsets.all(30.0),
+                                 padding: EdgeInsets.all(8.0),
+                                 width: 185.0,
+                                 color: Colors.red[600],
+                                 child: Column(
+                                   children: <Widget>[
+                                     Icon(Icons.badge, color: Colors.white, size: 40.0),
+                                     Text('${formState.faild} Formation(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
+                                     Text('Rejetée(s)', style: TextStyle(color: Colors.white70,fontSize: 22.0)),
+                                   ],
+                                 ),
+                               )
+                             ],
+                           );
+                     }
+                     return CircularProgressIndicator();
+                   }
+                   return CircularProgressIndicator();
+                 });
+           }
+           return CircularProgressIndicator();
+         },
+       ),
+     )
+
+//----------------------------------------------------------------------------------------------------------------------
   ];
 
 
@@ -179,12 +324,12 @@ class _MainPage extends State<MainPage>{
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.badge),
-              title: Text('Mes formations'),
+              title: Text('Mes candidatures'),
               backgroundColor: mainColor
           ),
           BottomNavigationBarItem(
-              icon: Icon(Icons.account_circle),
-              title: Text('Mon Rapport'),
+              icon: Icon(Icons.add_chart),
+              title: Text('Rapport'),
               backgroundColor: mainColor
           ),
         ],
