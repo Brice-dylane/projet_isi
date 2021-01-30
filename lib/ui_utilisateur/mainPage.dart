@@ -252,12 +252,12 @@ class _MainPage extends State<MainPage>{
                                Container(
                                  padding: EdgeInsets.all(8.0),
                                  margin: EdgeInsets.all(30.0),
-                                 width: 185.0,
+                                 width: 200.0,
                                  color: Colors.orange[800],
                                  child: Column(
                                    children: <Widget>[
                                      Icon(Icons.badge, color: Colors.white, size: 40.0,),
-                                     Text('${formState.load} Formation(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
+                                     Text('${formState.load} candidature(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
                                      Text('Encours', style: TextStyle(color: Colors.white70,fontSize: 22.0)),
                                    ],
                                  ),
@@ -265,12 +265,12 @@ class _MainPage extends State<MainPage>{
                                Container(
                                  margin: EdgeInsets.all(30.0),
                                  padding: EdgeInsets.all(8.0),
-                                 width: 185.0,
+                                 width: 200.0,
                                  color: Colors.teal[600],
                                  child: Column(
                                    children: <Widget>[
                                      Icon(Icons.badge, color: Colors.white, size: 40.0),
-                                     Text('${formState.success} Formation(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
+                                     Text('${formState.success} candidature(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
                                      Text('Approvée(s)', style: TextStyle(color: Colors.white70,fontSize: 22.0)),
                                    ],
                                  ),
@@ -278,12 +278,12 @@ class _MainPage extends State<MainPage>{
                                Container(
                                  margin: EdgeInsets.all(30.0),
                                  padding: EdgeInsets.all(8.0),
-                                 width: 185.0,
+                                 width: 200.0,
                                  color: Colors.red[600],
                                  child: Column(
                                    children: <Widget>[
                                      Icon(Icons.badge, color: Colors.white, size: 40.0),
-                                     Text('${formState.faild} Formation(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
+                                     Text('${formState.faild} candidature(s)', style: TextStyle(color: Colors.white,fontSize: 25.0)),
                                      Text('Rejetée(s)', style: TextStyle(color: Colors.white70,fontSize: 22.0)),
                                    ],
                                  ),
@@ -319,17 +319,17 @@ class _MainPage extends State<MainPage>{
         items: [
           BottomNavigationBarItem(
               icon: Icon(Icons.list),
-            title: Text('Formations ISJ'),
+            label: 'Formations ISJ',
             backgroundColor: mainColor
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.badge),
-              title: Text('Mes candidatures'),
+              label: 'Mes candidatures',
               backgroundColor: mainColor
           ),
           BottomNavigationBarItem(
               icon: Icon(Icons.add_chart),
-              title: Text('Rapport'),
+              label: 'Rapport',
               backgroundColor: mainColor
           ),
         ],
