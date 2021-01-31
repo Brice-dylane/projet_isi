@@ -18,7 +18,11 @@ if(isset($_FILES["file"])){
     $filename = $_FILES["file"]["name"]; 
     //name of file
     //$_FILES["file"]["size"] get the size of file
-    //you can validate here extension and size to upload file.
+    $fileSize = $_FILES['file']['size'];
+
+    if ($fileSize) {
+        # code...
+    }
 
     $savefile = "$target_dir/$filename";
     //complete path to save file

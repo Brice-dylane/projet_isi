@@ -32,6 +32,14 @@ if (isset($_GET["action"]))
 	{
 	include "formation.php";	
 	}
+	elseif ($_GET["action"] == "formuser")
+	{
+	include "formations_user.php";	
+	}
+	elseif ($_GET["action"] == "sateform")
+	{
+	include "stateForm_User.php";	
+	}
 	
 	
 }

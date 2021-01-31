@@ -27,7 +27,7 @@ class _MainPage extends State<MainPage>{
           children: <Widget>[
             Center(child: Row(
               children: <Widget>[
-                Text('Formations ISJ', style: TextStyle(fontSize: 25.0, color: mainColor)),
+                Text('', style: TextStyle(fontSize: 25.0)),
               ],
             )),
             FutureBuilder(
@@ -62,9 +62,12 @@ class _MainPage extends State<MainPage>{
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               crossAxisAlignment: CrossAxisAlignment.start,
                                               children: <Widget>[
+                                                Container(
+                                                  margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                                                  child: Icon(Icons.badge, color: Colors.white),
+                                                ),
                                                 Row(
                                                   children: <Widget>[
-                                                    Icon(Icons.badge, color: Colors.white),
                                                     Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(color: Colors.white))
                                                   ],
                                                 ),
@@ -73,12 +76,7 @@ class _MainPage extends State<MainPage>{
                                                   margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
                                                   child: Text('Spécialité: ${formation.formationSpecialite}',style: TextStyle(color: Colors.white)),
                                                 ),
-                                                Text('${formation.description}',style: TextStyle(color: Colors.white)),
-                                                Container(
-                                                    alignment: Alignment.bottomLeft,
-                                                    margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
-                                                    child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 15.0, color: Colors.white))
-                                                ),
+                                                Text('${formation.description}',style: TextStyle(color: Colors.white,fontStyle: FontStyle.italic)),
                                                 Container(
                                                   alignment: Alignment.bottomRight,
                                                   child: RaisedButton(
@@ -100,6 +98,11 @@ class _MainPage extends State<MainPage>{
                                                       ),
                                                     ),
                                                   ),
+                                                ),
+                                                Container(
+                                                    alignment: Alignment.bottomLeft,
+                                                    margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
+                                                    child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 10.0, color: Colors.white70))
                                                 )
                                               ],
                                             ),
@@ -134,7 +137,7 @@ class _MainPage extends State<MainPage>{
         children: <Widget>[
           Center(child: Row(
             children: <Widget>[
-              Text('Mes candidatures', style: TextStyle(fontSize: 25.0, color: mainColor)),
+              Text('', style: TextStyle(fontSize: 25.0)),
             ],
           )),
           FutureBuilder(
@@ -179,9 +182,12 @@ class _MainPage extends State<MainPage>{
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: <Widget>[
+                                              Container(
+                                                margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
+                                                child: Icon(Icons.badge, color: Colors.white),
+                                              ),
                                               Row(
                                                 children: <Widget>[
-                                                  Icon(Icons.badge, color: Colors.white),
                                                   Text(' ${formation.formationName}'.toUpperCase(),style: TextStyle(color: Colors.white))
                                                 ],
                                               ),
@@ -190,21 +196,21 @@ class _MainPage extends State<MainPage>{
                                                 margin: EdgeInsets.only(top: 5.0, bottom: 10.0),
                                                 child: Text('Spécialité: ${formation.formationSpecialite}',style: TextStyle(color: Colors.white)),
                                               ),
-                                              Text('${formation.description}',style: TextStyle(color: Colors.white)),
-                                              Container(
-                                                  alignment: Alignment.bottomLeft,
-                                                  margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
-                                                  child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 15.0, color: Colors.white))
-                                              ),
+                                              Text('${formation.description}',style: TextStyle(color: Colors.white,fontStyle: FontStyle.italic)),
                                               Container(
                                                 alignment: Alignment.bottomRight,
-                                                child: Text('Status: ${stateForm}',style: TextStyle(color: stateForm=='Rejetée'?Colors.red[200]:Colors.teal[300],fontSize: 20.0)),
+                                                child: Text('Status: ${stateForm}',style: TextStyle(color: stateForm=='Rejetée'?Colors.red[200]:Colors.teal[300],fontSize: 15.0)),
                                               ),
                                               Container(
                                                   alignment: Alignment.bottomRight,
                                                   margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
-                                                  child: Text("Redigée le "+formation.createTime.day.toString()+"-"+formation.createTime.month.toString()+"-"+formation.createTime.year.toString(),style: TextStyle(fontSize: 15.0, color: Colors.white))
+                                                  child: Text("Envoyé le "+formation.createTime.day.toString()+"-"+formation.createTime.month.toString()+"-"+formation.createTime.year.toString(),style: TextStyle(fontSize: 10.0, color: Colors.white,fontStyle: FontStyle.italic))
                                               ),
+                                              Container(
+                                                  alignment: Alignment.bottomLeft,
+                                                  margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
+                                                  child: Text("Du "+formation.startDate.day.toString()+"-"+formation.startDate.month.toString()+"-"+formation.startDate.year.toString()+" au "+formation.endDate.day.toString()+"-"+formation.endDate.month.toString()+"-"+formation.endDate.year.toString(),style: TextStyle(fontSize: 10.0, color: Colors.white,fontStyle: FontStyle.italic))
+                                              )
                                             ],
                                           ),
                                         ),
@@ -251,7 +257,7 @@ class _MainPage extends State<MainPage>{
                              children: <Widget>[
                                Container(
                                  padding: EdgeInsets.all(8.0),
-                                 margin: EdgeInsets.all(30.0),
+                                 margin: EdgeInsets.only(top: 20.0),
                                  width: 200.0,
                                  color: Colors.orange[800],
                                  child: Column(
@@ -276,7 +282,6 @@ class _MainPage extends State<MainPage>{
                                  ),
                                ),
                                Container(
-                                 margin: EdgeInsets.all(30.0),
                                  padding: EdgeInsets.all(8.0),
                                  width: 200.0,
                                  color: Colors.red[600],

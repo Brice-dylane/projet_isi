@@ -52,7 +52,7 @@ class _Candidacy extends State<Candidacy>{
   uploadFile() async {
     var random = new Random();
     String code = Candidacy.formation.formationName.substring(0,3).toUpperCase()+""+Candidacy.formation.formationSpecialite.substring(0,3).toUpperCase()+""+Candidacy.formation.startDate.year.toString()+""+random.nextInt(10000).toString();
-    final uri = Uri.parse("http://192.168.1.104/webservice/candidacy.php");
+    final uri = Uri.parse("http://192.168.1.106/webservice/candidacy.php");
     var request = http.MultipartRequest('POST',uri);
     request.fields['created'] = DateTime.now().toString();
     request.fields['email'] = Candidacy.user.getEmail();
@@ -93,7 +93,7 @@ class _Candidacy extends State<Candidacy>{
             color: Colors.white,
             child: Column(
               children: <Widget>[
-                Text('Spécialité', style: TextStyle(color: mainColor,fontSize: 25), textAlign: TextAlign.left,),
+                Text('Spécialité', style: TextStyle(color: mainColor,fontSize: 25), textAlign: TextAlign.left),
                 Text(Candidacy.formation.formationSpecialite, style: TextStyle(color:mainColor,fontSize: 17.0))
               ],
             ),
@@ -136,7 +136,8 @@ class _Candidacy extends State<Candidacy>{
           ),
 
           Container(
-              margin: EdgeInsets.only(left: 190.0, right: 190.0),
+              margin: EdgeInsets.only(left: 50.0, right: 50.0),
+            width: 100.0,
               child:RaisedButton.icon(
                 onPressed: (){
                   selectFile();
@@ -151,11 +152,11 @@ class _Candidacy extends State<Candidacy>{
           Container(margin: EdgeInsets.all(20),),
 
           Container(
-              margin: EdgeInsets.only(left: 150.0, right: 150.0),
+              margin: EdgeInsets.only(left: 50.0, right: 50.0),
               child:RaisedButton.icon(padding: EdgeInsets.all(15),
                 onPressed: isEnable ? ()=> uploadFile() : null,
                 icon: Icon(Icons.badge),
-                label: Text(Candidacy.user.getProfil()=='ROLE_PROF'? 'Former':'Se former',style: TextStyle(fontSize: 28),),
+                label: Text(Candidacy.user.getProfil()=='ROLE_PROF'? 'Former':'Se former',style: TextStyle(fontSize: 22),),
                 color: mainColor,
                 colorBrightness: Brightness.dark,
               )
