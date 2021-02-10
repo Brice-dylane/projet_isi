@@ -50,26 +50,37 @@ class _Candidacy extends State<Candidacy>{
 
 
   uploadFile() async {
-    var random = new Random();
-    String code = Candidacy.formation.formationName.substring(0,3).toUpperCase()+""+Candidacy.formation.formationSpecialite.substring(0,3).toUpperCase()+""+Candidacy.formation.startDate.year.toString()+""+random.nextInt(10000).toString();
-    final uri = Uri.parse("http://192.168.1.106/webservice/candidacy.php");
-    var request = http.MultipartRequest('POST',uri);
-    request.fields['created'] = DateTime.now().toString();
-    request.fields['email'] = Candidacy.user.getEmail();
-    request.fields['formation'] = Candidacy.formation.formationName;
-    request.fields['code'] = code;
-    var pic = await http.MultipartFile.fromPath("file", selectedfile.path);
-    request.files.add(pic);
-    var response = await request.send();
+    int sizeInBytes = selectedfile.lengthSync();
+    double sizeInMb = sizeInBytes / (1024 * 1024);
+    if (sizeInMb <= 5){
+      var random = new Random();
+      String code = Candidacy.formation.formationName.substring(0,3).toUpperCase()+""+Candidacy.formation.formationSpecialite.substring(0,3).toUpperCase()+""+Candidacy.formation.startDate.year.toString()+""+random.nextInt(100000).toString();
+      final uri = Uri.parse("http://192.168.1.106/webservice/candidacy.php");
+      var request = http.MultipartRequest('POST',uri);
+      request.fields['created'] = DateTime.now().toString();
+      request.fields['email'] = Candidacy.user.getEmail();
+      request.fields['formation'] = Candidacy.formation.formationName;
+      request.fields['code'] = code;
+      var pic = await http.MultipartFile.fromPath("file", selectedfile.path);
+      request.files.add(pic);
+      var response = await request.send();
 
-    if (response.statusCode == 200) {
-      setState(() {
-        isEnable = false;
-      });
-      print('File Uploded');
-    }else{
-      print('File Not Uploded');
+      if (response.statusCode == 200) {
+        setState(() {
+          isEnable = false;
+        });
+        print('File Uploded');
+      }else{
+        print('File Not Uploded');
+      }
     }
+    else{
+      setState(() {
+        fileName = "Max size 3 Mo";
+      });
+    }
+
+
   }
 
 
@@ -165,6 +176,8 @@ class _Candidacy extends State<Candidacy>{
       ),
     );
   }
+
+
 
 
 }

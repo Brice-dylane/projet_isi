@@ -201,11 +201,11 @@ class _MainPage extends State<MainPage>{
                                                 alignment: Alignment.bottomRight,
                                                 child: Text('Status: ${stateForm}',style: TextStyle(color: stateForm=='Rejetée'?Colors.red[200]:Colors.teal[300],fontSize: 15.0)),
                                               ),
-                                              Container(
+                                              /*Container(
                                                   alignment: Alignment.bottomRight,
                                                   margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
                                                   child: Text("Envoyé le "+formation.createTime.day.toString()+"-"+formation.createTime.month.toString()+"-"+formation.createTime.year.toString(),style: TextStyle(fontSize: 10.0, color: Colors.white,fontStyle: FontStyle.italic))
-                                              ),
+                                              ),*/
                                               Container(
                                                   alignment: Alignment.bottomLeft,
                                                   margin: EdgeInsets.only(left: 0.0,bottom: 10.0),
@@ -219,7 +219,7 @@ class _MainPage extends State<MainPage>{
                                 ),
                               );
                             }
-                            return CircularProgressIndicator();
+                            return Text('Aucune candidature',style: TextStyle(color: Colors.white30,fontStyle: FontStyle.italic));
                           },
                         );
                         //-------------------------------------------------------------------------------------------------------------------
