@@ -52,7 +52,7 @@ class _Candidacy extends State<Candidacy>{
   uploadFile() async {
     int sizeInBytes = selectedfile.lengthSync();
     double sizeInMb = sizeInBytes / (1024 * 1024);
-    if (sizeInMb <= 5){
+    if (sizeInMb <= 20){
       var random = new Random();
       String code = Candidacy.formation.formationName.substring(0,3).toUpperCase()+""+Candidacy.formation.formationSpecialite.substring(0,3).toUpperCase()+""+Candidacy.formation.startDate.year.toString()+""+random.nextInt(100000).toString();
       final uri = Uri.parse("http://192.168.1.106/webservice/candidacy.php");
@@ -61,6 +61,7 @@ class _Candidacy extends State<Candidacy>{
       request.fields['email'] = Candidacy.user.getEmail();
       request.fields['formation'] = Candidacy.formation.formationName;
       request.fields['code'] = code;
+      request.fields['fname'] = fileName;
       var pic = await http.MultipartFile.fromPath("file", selectedfile.path);
       request.files.add(pic);
       var response = await request.send();
@@ -76,7 +77,7 @@ class _Candidacy extends State<Candidacy>{
     }
     else{
       setState(() {
-        fileName = "Max size 3 Mo";
+        fileName = "Max size 20 Mo";
       });
     }
 
@@ -165,7 +166,7 @@ class _Candidacy extends State<Candidacy>{
           Container(
               margin: EdgeInsets.only(left: 50.0, right: 50.0),
               child:RaisedButton.icon(padding: EdgeInsets.all(15),
-                onPressed: isEnable ? ()=> uploadFile() : null,
+                onPressed: isEnable && fileName!='' ? ()=> uploadFile() : null,
                 icon: Icon(Icons.badge),
                 label: Text(Candidacy.user.getProfil()=='ROLE_PROF'? 'Former':'Se former',style: TextStyle(fontSize: 22),),
                 color: mainColor,

@@ -10,21 +10,19 @@ $code = $_POST["code"];
 $id_user = 0;
 $id_formation = 0;
 $id_file = 0;
+$file_name = $_POST["fname"];
 //array to return
 
 if(isset($_FILES["file"])){
     //directory to upload file
-    $target_dir = "candidatures/"; //create folder files/ to save file
+    $target_dir = "candidatures"; //create folder files/ to save file
     $filename = $_FILES["file"]["name"]; 
     //name of file
     //$_FILES["file"]["size"] get the size of file
     $fileSize = $_FILES['file']['size'];
 
-    if ($fileSize) {
-        # code...
-    }
-
-    $savefile = "$target_dir/$filename";
+    if ($fileSize <= 20485760) {
+       $savefile = "$target_dir/$filename";
     //complete path to save file
 
     if(move_uploaded_file($_FILES["file"]["tmp_name"], $savefile)) {
@@ -33,10 +31,11 @@ if(isset($_FILES["file"])){
         $pdo=new PDO(URI_BASE_DONNEES, UTILISATEUR, MOT_DE_PASSE);
         $blob = fopen($savefile, 'rb');
 //----------------------------------------------Insert File-----------------------------------------------------------------------------------------
-        $sql = "INSERT INTO file(file_data,file_data_content_type,create_time,update_time) VALUES(:fileData,:fileDataContent,:create,:updateTime)";
+        $sql = "INSERT INTO file(file_data,file_name,file_data_content_type,create_time,update_time) VALUES(:fileData,:fname,:fileDataContent,:create,:updateTime)";
         $stmt = $pdo->prepare($sql);
 
-        $stmt->bindParam(':fileData', $blob, PDO::PARAM_LOB);
+        $stmt->bindParam(':fileData', $blob);
+        $stmt->bindParam(':fname', $file_name);
         $stmt->bindParam(':fileDataContent', $target_dir);
         $stmt->bindParam(':create', $created);
         $stmt->bindParam(':updateTime', $created);
@@ -88,14 +87,21 @@ if(isset($_FILES["file"])){
                 if ($stm2)
                         {
                             $return["error"] = true;
-                            $return["msg"] =  "Error during saving candidacy.";
+                            $return["msg"] =  "Error saving candidacy.";
                         }
 //--------------------------------------------------------------------------------------------------------------------------------------------
 
     }else{
         $return["error"] = true;
-        $return["msg"] =  "Error during saving file.";
+        $return["msg"] =  "Error saving file.";
     }
+    }
+    else{
+        $return["error"] = true;
+        $return["msg"] =  "Error File is too big.";
+    }
+
+    
 }else{
     $return["error"] = true;
     $return["msg"] =  "No file is sublitted.";

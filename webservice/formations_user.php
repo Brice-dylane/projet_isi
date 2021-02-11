@@ -16,7 +16,7 @@ $pdo=new PDO(URI_BASE_DONNEES, UTILISATEUR, MOT_DE_PASSE);
                                 
                         }
 
-$stm = $pdo->query("select f.id,f.formation_name,f.formation_specialite,f.description,f.duration,f.start_date,f.end_date,f.create_time,c.candidacy_state from candidacy c inner join formation f on f.id=c.formation_id where c.user_id='".$id_user."';");
+$stm = $pdo->query("select f.id,f.formation_name,f.formation_specialite,f.description,f.duration,f.start_date,f.end_date,f.create_time,c.candidacy_state from candidacy c inner join formation f on f.id=c.formation_id where c.user_id='".$id_user."' order by c.create_time desc;");
 
 if ($stm)
 {
